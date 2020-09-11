@@ -45,27 +45,38 @@ body{
     transition: 0.5s;
 }
 #food:hover{
-   width: 175px;
-   height: 175px;
+   width: 167px;
+   height: 167px;
    transition: 0.5;
 
 }
 
 #clean:hover{
-    width: 155px;
-   height: 160px;
+    width: 157px;
+   height: 162px;
    margin-left: 100px;
    transition: 0.5;
 
 }
 #dog:hover{
-    width: 155px;
-    height: 155px;
+    width: 157px;
+    height: 157px;
     transition: 0.5;
 }
 
 #drink:hover{
-    width: 155px;
-    height: 155px;
+    width: 157px;
+    height: 157px;
     transition: 0.5;
+}
+
+#bb:hover{
+    width: 157px;
+    height: 157px;
+    transition: 0.5;
+}
+
+#care:hover{
+    width: 177px;
+    height: 177px;
 }
