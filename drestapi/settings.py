@@ -37,12 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD:drestapi/settings.py
-    'app'
-=======
-    
-    'api.apps.ApiConfig',
->>>>>>> e5a8e83a2c177d1e89d582c2d253ac10e746c5cb:PuntoAndinoShop/PuntoAndinoShop/settings.py
+    'app',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +49,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
 
 ROOT_URLCONF = 'drestapi.urls'
