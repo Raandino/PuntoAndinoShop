@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'apps.core',
+    'apps.store'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.store.context_processors.menu_categories'
             ],
         },
     },
@@ -75,8 +79,12 @@ WSGI_APPLICATION = 'andinoshop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':  'Punto_Andino',
+        'USER': 'postgres',
+        'PASSWORD': 'puntoandino',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
