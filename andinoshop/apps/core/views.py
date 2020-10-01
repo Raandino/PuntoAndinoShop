@@ -1,8 +1,13 @@
 from django.shortcuts import render
 
-
+from apps.store.models import Product
 # Create your views here.
 
 def frontpage(request):
-    return render(request, 'frontpage.html')
+    products = Product.objects.filter(disccount = True)
+
+    context = {
+        'products': products
+    }
+    return render(request, 'frontpage.html', context)
 

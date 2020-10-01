@@ -5,9 +5,11 @@ from django.db import models
 class Category(models.Model):
     title = models.CharField(max_length= 200, null = True)
     slug = models.SlugField(max_length=200, null = True) 
+    ordering = models.IntegerField(default = 0)
 
     class Meta:
         verbose_name_plural = 'Categories'
+        ordering = ('ordering',)
 
     def __str__(self):
         return self.title
@@ -35,7 +37,11 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, related_name='products', null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
+    disccount = models.BooleanField(default = False)
+    date_added = models.DateTimeField(auto_now_add = True)
 
+    class Meta:
+        ordering = ('-date_added',)
     def __str__(self):
         return self.name
 
