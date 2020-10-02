@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ category.title }} | {% endblock %}
 {% block content %}
 <h1>{{category.title}}</h1>
 <div class="row">
     {% for product in products %}
         <div class="col-lg-2 ml-4 shadow-sm p-3 mb-5 bg-white rounded">
-           
+            <img src="/{{ product.thumbnail }}" class="card-img" alt="">
            <div class="box-element">
+               
                <h5 class="text-center">{{product.name}}</h6>
                <hr>
                <a class="btn btn-outline-secondary add-btn" href="{% url 'product_detail' category.slug product.slug %}">Ver mas</a>

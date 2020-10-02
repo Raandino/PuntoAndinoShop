@@ -1,8 +1,19 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from .models import Product, Category
 
 # Create your views here.
 
+def search(request):
+    query = request.GET.get('query')
+    products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query))
+
+    context = {
+        'query': query,
+        'products': products
+    }
+
+    return render(request, 'search.html', context)
 
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
