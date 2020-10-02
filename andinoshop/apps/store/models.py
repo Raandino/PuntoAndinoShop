@@ -41,14 +41,39 @@ class Product(models.Model):
     price = models.FloatField(null = True)
     disccount = models.BooleanField(default = False)
 
-    image = models.ImageField(upload_to = 'static/images/',blank = True, null = True)
-    thumbnail = models.ImageField(upload_to = 'static/images/', blank = True, null = True) 
+    image = models.ImageField(upload_to = 'images/',blank = True, null = True)
+    thumbnail = models.ImageField(upload_to = 'images/', blank = True, null = True) 
     date_added = models.DateTimeField(auto_now_add = True)
 
     class Meta:
         ordering = ('-date_added',)
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.thumbnail = self.make_thumbnail(self.image)
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return '/%s/%s/' % (self.category.slug, self.slug)
+
+    def make_thumbnail(self, image, size=(300, 200)):
+        img = Image.open(image)
+        img.convert('RGB')
+        img.thumbnail(size)
+        
+        thumb_io = BytesIO()
+        img.save(thumb_io, 'PNG', quality = 85)
+
+        thumbnail = File(thumb_io, name = image.name)
+
+        return thumbnail
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name = 'images', on_delete = models.CASCADE)
+    image = models.ImageField(upload_to = 'static/images/',blank = True, null = True)
+    thumbnail = models.ImageField(upload_to = 'static/images/', blank = True, null = True)
 
     def save(self, *args, **kwargs):
         self.thumbnail = self.make_thumbnail(self.image)
@@ -65,4 +90,4 @@ class Product(models.Model):
 
         thumbnail = File(thumb_io, name = image.name)
 
-        return thumbnail
+        return thumbnail 
