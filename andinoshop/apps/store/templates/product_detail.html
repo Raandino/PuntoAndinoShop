@@ -21,7 +21,12 @@
         <h6>{{product.brand}}</h6>
         <h1>{{product.name}}</h1>
         <hr>
-        <h3>C${{product.price}}</h3>
+        <h3> {% if product.disccount_price %}
+            <del>C${{ product.price }}</del>
+            C${{ product.disccount_price }}
+        {% else %}
+        C${{ product.price }}
+        {% endif %}</h3>
         <p>{{product.description}}</p>
         <form class="form-inline">
         <button class="btn btn-success mb-2">Añadir al carrito</button>

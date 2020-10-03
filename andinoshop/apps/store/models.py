@@ -4,6 +4,15 @@ from django.core.files import File
 from PIL import Image
 # Create your models here.
 
+class Usuario(models.Model):
+    name = models.CharField(max_length=200, null = True)
+    phone = models.CharField(max_length=200, null = True)
+    email = models.CharField(max_length=200, null = True)
+    date_created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return self.name
+
 class Category(models.Model):
     title = models.CharField(max_length= 200, null = True)
     slug = models.SlugField(max_length=200, null = True) 
@@ -40,6 +49,8 @@ class Product(models.Model):
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
     disccount = models.BooleanField(default = False)
+    disccount_price = models.FloatField(blank = True, null = True)
+    quantity = models.IntegerField(default = 1)
 
     image = models.ImageField(upload_to = 'images/',blank = True, null = True)
     thumbnail = models.ImageField(upload_to = 'images/', blank = True, null = True) 
@@ -91,3 +102,18 @@ class ProductImage(models.Model):
         thumbnail = File(thumb_io, name = image.name)
 
         return thumbnail 
+
+class OrderProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return self.product.name
+
+class Order(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete = models.CASCADE, null = True)
+    products = models.ManyToManyField(OrderProduct)
+    start_date = models.DateTimeField(auto_now_add = True)
+    ordered_date = models.DateTimeField()
+    ordered = models.BooleanField(default = False)
+
+    

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from .models import Product, Category
+from .models import Product, Category, OrderProduct, Order
 
 # Create your views here.
 
@@ -38,3 +38,7 @@ def category_detail(request, slug):
     }
 
     return render(request, 'category_detail.html', context)
+
+#def add_to_cart(request, slug):
+#   product = get_object_or_404(Product, slug = slug)
+#    order_product = OrderProduct.objects.create(product = product)

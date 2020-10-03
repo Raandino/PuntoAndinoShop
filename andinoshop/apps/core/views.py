@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from apps.store.models import Product
+from apps.store.models import Product, Category
 # Create your views here.
 
 def frontpage(request):

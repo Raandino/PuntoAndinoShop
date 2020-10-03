@@ -12,7 +12,13 @@
                <h5 class="text-center">{{product.name}}</h6>
                <hr>
                <a class="btn btn-outline-secondary add-btn" href="{% url 'product_detail' category.slug product.slug %}">Ver mas</a>
-               <p class="float-right">C${{product.price}}</p>
+               <p class="float-right"> 
+                   {% if product.disccount_price %}
+                <del>C${{ product.price }}</del>
+                C${{ product.disccount_price }}
+            {% else %}
+            C${{ product.price }}
+            {% endif %}</p>
            </div>
 
         </div>
