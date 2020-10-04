@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+<div class="row">
+    <div class="col-md-3">
+        <div class="card card-body">
+            <img src="{{request.user.usuario.profile_pic.url}}" class="profile-pic" alt="">
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card card-body">
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                <label for="">Nombre</label>
+                {{ form.name}}</div>
+                    <div class="form-group">
+                <label for="">Telefono</label>
+                {{ form.phone}}</div>
+                        <div class="form-group">
+                <label for="">Email</label>
+                {{ form.email}}</div>
+
+                <div class="form-group">
+                    <label for="">Foto de perfil</label>
+                    {{ form.profile_pic}}</div>
+                <input type="submit" value="Actualizar Informacion" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+   
+</div>
+</div>
+{% endblock %}
