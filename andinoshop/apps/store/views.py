@@ -1,6 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from .forms import CreateUserForm
 from .models import Product, Category, OrderProduct, Order
+from django.contrib import messages
 
 # Create your views here.
 
@@ -42,3 +46,39 @@ def category_detail(request, slug):
 #def add_to_cart(request, slug):
 #   product = get_object_or_404(Product, slug = slug)
 #    order_product = OrderProduct.objects.create(product = product)
+
+def registerPage(request):
+    form = CreateUserForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            messages.success(request, 'Cuenta creada satisfactoriamente '+first_name+ ' ' +last_name)
+            return redirect('loginPage')
+
+    context = {'form': form}
+    return render(request, 'register.html', context)
+
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username = username, password = password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('frontpage')
+
+        else:
+            messages.info(request, 'Datos Invalidos')
+
+
+    context = {}
+    return render(request, 'login.html', context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('loginPage')

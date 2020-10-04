@@ -19,14 +19,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from apps.core.views import frontpage
-from apps.store.views import product_detail, category_detail, search
+from apps.store.views import product_detail, category_detail, search, registerPage, loginPage, logoutUser
 
 
 urlpatterns = [
     path('', frontpage, name='frontpage'),
     path('search/', search, name='search'),
     path('admin/', admin.site.urls),
-   # path('accounts/', include('allauth.urls')),
+    path('register/', registerPage, name = 'registerPage'),
+    path('login/', loginPage, name = 'loginPage'),
+    path('logout/', logoutUser, name = 'logout'),
     path('<slug:category_slug>/<slug:slug>/', product_detail, name='product_detail'),
     path('<slug:slug>/', category_detail, name='category_detail'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
