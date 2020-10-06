@@ -29,7 +29,7 @@
         {% endif %}</h3>
         <p>{{product.description}}</p>
         <form class="form-inline">
-        <button class="btn btn-success mb-2">Añadir al carrito</button>
+        <a href="{{ product.get_add_to_cart_url }}" class="btn btn-success mb-2">Añadir al carrito</a>
     </form>
     </div>
 </div>

@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
+from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario
+from .models import Product, Category, OrderProduct, Order, Usuario, SubCategory
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.contrib import messages
@@ -22,6 +23,8 @@ def search(request):
 
     return render(request, 'search.html', context)
 
+
+
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
 
@@ -36,15 +39,18 @@ def product_detail(request, slug, category_slug):
 
     return render(request, 'product_detail.html', context)
 
+
 def category_detail(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    products = category.products.all()
+    products = category.products.filter(parent = None)
     context = {
         'category': category,
         'products' : products
     }
 
     return render(request, 'category_detail.html', context)
+
+
 
 #def add_to_cart(request, slug):
 #   product = get_object_or_404(Product, slug = slug)
@@ -108,17 +114,26 @@ def profilePage(request):
 def cart(request):
     return render(request, 'cart.html')
 
+@login_required(login_url = 'loginPage')
 def add_to_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)
-    order_product = OrderProduct.objects.create(product = product)
-    order_qs = Order.objects.filter(usuario = request.usuario, ordered = False) 
+    order_product, created = OrderProduct.objects.get_or_create(
+        product = product,
+        user = request.user,
+        ordered = False
+    )
+    order_qs = Order.objects.filter(user = request.user, ordered = False) 
     if order_qs.exists():
         order = order_qs[0]
-        if order.products.filter(product_slug = product.slug).exists():
+        if order.products.filter(product_id = product.id).exists():
             order_product.quantity += 1
             order_product.save()
-    
+        else:
+            order.products.add(order_product)
     else:
-        order = Order.objects.create(usuario = request.usuario)
+        ordered_date = timezone.now()
+        order = Order.objects.create(user = request.user, ordered_date = ordered_date)
         order.products.add(order_product)
     return redirect('cart')
+
+

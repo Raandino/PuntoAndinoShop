@@ -1,7 +1,9 @@
 from django.db import models
 from io import BytesIO
 from django.core.files import File
+from django.shortcuts import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 from PIL import Image
 # Create your models here.
 
@@ -17,6 +19,7 @@ class Usuario(models.Model):
         return self.name
 
 class Category(models.Model):
+    parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, blank = True, null = True)
     title = models.CharField(max_length= 200, null = True)
     slug = models.SlugField(max_length=200, null = True) 
     ordering = models.IntegerField(default = 0)
@@ -47,7 +50,7 @@ class Product(models.Model):
     name = models.CharField(max_length = 255, null = True)
     slug = models.SlugField(max_length=200)
     category = models.ForeignKey(Category, related_name='products', on_delete = models.CASCADE)
-    subcategory = models.ForeignKey(SubCategory, related_name='products', null = True, on_delete = models.CASCADE)
+    parent = models.ForeignKey('self', related_name = 'variants', on_delete = models.CASCADE, blank = True, null = True)
     brand = models.ForeignKey(Brand, related_name='products', null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
@@ -83,6 +86,11 @@ class Product(models.Model):
 
         return thumbnail
 
+    def get_add_to_cart_url(self):
+        return reverse("add-to-cart", kwargs={
+            'slug': self.slug
+        })
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name = 'images', on_delete = models.CASCADE)
     image = models.ImageField(upload_to = 'static/images/',blank = True, null = True)
@@ -106,18 +114,23 @@ class ProductImage(models.Model):
         return thumbnail 
 
 class OrderProduct(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
+    ordered = ordered = models.BooleanField(default = False)
     product = models.ForeignKey(Product, on_delete = models.CASCADE)
     quantity = models.IntegerField(default = 1)
 
 
     def __str__(self):
-        return self.product.name
+        return f"{self.quantity} of {self.product.name}"
 
 class Order(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete = models.CASCADE, null = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
     products = models.ManyToManyField(OrderProduct)
     start_date = models.DateTimeField(auto_now_add = True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default = False)
 
-    
+    def __str__(self):
+        return str(self.ordered_date)
