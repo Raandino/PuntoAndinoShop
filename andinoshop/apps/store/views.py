@@ -7,6 +7,7 @@ from .forms import CreateUserForm, CustomerForm
 from .models import Product, Category, OrderProduct, Order, Usuario, SubCategory
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -42,10 +43,14 @@ def product_detail(request, slug, category_slug):
 
 def category_detail(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    products = category.products.filter(parent = None)
+    products = category.products.all()
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
         'category': category,
-        'products' : products
+        'products' : products,
+        'page_obj': page_obj
     }
 
     return render(request, 'category_detail.html', context)

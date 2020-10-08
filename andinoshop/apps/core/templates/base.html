@@ -14,83 +14,52 @@
     <link rel="stylesheet" type="text/css" href="{% static '/css/style.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-        <a class="navbar-brand" href="{% url 'frontpage' %}">Punto Andino Shop</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+    
+        <a class="navbar-brand ml-3" href="{% url 'frontpage' %}">Punto Andino Shop</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
       
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            {% if request.user.is_staff %}
+ 
             <li class="nav-item">
-              <a class="nav-link" href="#">Home</a>
+              <a class="nav-link" href="{% url 'frontpage' %}">Home</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            {% endif %}
-            <!--
+
+
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Categorias
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">  Categorias </a>
+              <ul class="dropdown-menu">
                 {% for category in menu_categories %}
-                <a class="dropdown-item" href="{% url 'category_detail' category.slug %}">{{category.title}}</a>
-
-                {% endfor %}
-               
-              </div>
-            </li>
-
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                SubCategorias
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                {% for subcategory in menu_subcategorias %}
-                <a class="dropdown-item" href="{% url 'subcategory' subcategory.category.slug subcategory.slug %}">{{subcategory.title}}</a>
-                {% endfor %}
-              </div>
-            </li>-->
-            {% for category in menu_categories %}
-            <li class="nav-item dropdown">
-              {% if not category.children.all %}
-              <a class="nav-link " href="{% url 'category_detail' category.slug %}" role="button" aria-haspopup="true" aria-expanded="false">
-                {{category.title}}
-              </a>
+                {% if not category.children.all %}
+              <li><a class="dropdown-item" href="{% url 'category_detail' category.slug %}"> {{category.title}} </a></li>
               {% else %}
-              
-              <a class="nav-link dropdown-toggle" href="{% url 'category_detail' category.slug %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{category.title}}
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'category_detail' category.slug %}"> {{category.title}} &raquo </a>
+               <ul class="submenu dropdown-menu">
                 {% for subcategory in category.children.all %}
-                <a class="dropdown-item" href="{% url 'category_detail' subcategory.slug %}">{{subcategory.title}}</a>
-
+                  <li><a class="dropdown-item" href="{% url 'category_detail' subcategory.slug %}"> {{subcategory.title}}</a></li>
+                  {% endfor %} 
+               </ul>
+              </li>
+            
+                {% endif %}
                 {% endfor %}
-               
-              </div>
-
-              {% endif %}
-            </li>
-            {% endfor %}
+              </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Lista de Favoritos</a>
+          </li>
+    
           
           </ul>
-          <form class="form-inline my-2 my-lg-0 mr-3" method="GET" action="{% url 'search' %}">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" name="query">
+          <form class="form-inline my-2 my-lg-0 " method="GET" action="{% url 'search' %}">
+            <input class="form-control mr-sm-2 " type="text" placeholder="Search" name="query">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             
           </form>
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'cart' %}">
-                <span style="color: red;">{{ request.user|cart_item_count }}</span>
-                Carrito</a>
-              
-            </li>
+          <ul class="navbar-nav ">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Cuenta
@@ -105,11 +74,18 @@
                 {% endif %}
               </div>
             </li>
+            <li class="nav-item mr-3">
+              <a class="nav-link" href="{% url 'cart' %}">
+                <span style="color: red;">{{ request.user|cart_item_count }}</span>
+                Carrito</a>
+              
+            </li>
+
 
           </ul>
          
         </div>
-    </div>
+
       </nav>
     
       <section class="section">
@@ -145,7 +121,24 @@
           </div>
         </div>
       </footer>
-      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js">
+      $(document).on('click', '.dropdown-menu', function (e) {
+  e.stopPropagation();
+});
+
+// make it as accordion for smaller screens
+if ($(window).width() < 992) {
+  $('.dropdown-menu a').click(function(e){
+    e.preventDefault();
+      if($(this).next('.submenu').length){
+        $(this).next('.submenu').toggle();
+      }
+      $('.dropdown').on('hide.bs.dropdown', function () {
+     $(this).find('.submenu').hide();
+  })
+  });
+}
+      </script>
       {% block scripts %}
       {% endblock %}
 </body>

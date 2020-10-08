@@ -2,23 +2,60 @@
 
 {% block title %}Search | {% endblock %}
 {% block content %}
-<h2>Search term: "{{ query }}" </h2>
-<div class="row">
-    {% for product in products %}
-        <div class="col-lg-2 ml-4 shadow-sm p-3 mb-5 bg-white rounded">
-            <img src="{{ product.thumbnail.url }}"class="rounded mx-auto d-block" alt="">
-           <div class="box-element">
-               
-               <h5 class="text-center">{{product.name}}</h6>
-               <hr>
-               <a class="btn btn-outline-secondary add-btn" href="{% url 'product_detail' product.category.slug product.slug %}">Ver mas</a>
-               <p class="float-right">C${{product.price}}</p>
-           </div>
 
-        </div>
-        {% endfor %}   
+<div class="p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+    <h5>Resultados para: <span class="font-italic">{{ query }} </span></h5>
 </div>
-        
+<div class="container">
+    <div class="row mt-3">
+        {% for product in products %}
+            {% if products|length > 1 %}
+            <div class="col ml-3 shadow p-3 mb-5 bg-white rounded">
+                <img src="{{ product.thumbnail.url }}" class="rounded mx-auto d-block" alt="">
+               <div class="box-element">
+                   
+                   <h6 class="text-center">{{product.name}}</h6>
+                   <hr>
+                   <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' product.category.slug product.slug %}">Ver mas</a>
+                   <p class="float-right"> 
+                       {% if product.disccount_price %}
+                    <del style="color: grey;">C${{ product.price }}</del>
+                   <span class="font-weight-bold">C${{ product.disccount_price }}</span> 
+                {% else %}
+               C${{ product.price }}
+                {% endif %}</p>
+               </div>
+    
+            </div>
+
+            {% else %}
+            <div class="col-lg-3 ml-3 shadow p-3 mb-5 bg-white rounded">
+                <img src="{{ product.thumbnail.url }}" class="rounded mx-auto d-block" alt="">
+               <div class="box-element">
+                   
+                   <h6 class="text-center">{{product.name}}</h6>
+                   <hr>
+                   <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' product.category.slug product.slug %}">Ver mas</a>
+                   <p class="float-right"> 
+                       {% if product.disccount_price %}
+                    <del style="color: grey;">C${{ product.price }}</del>
+                   <span class="font-weight-bold">C${{ product.disccount_price }}</span> 
+                {% else %}
+               C${{ product.price }}
+                {% endif %}</p>
+               </div>
+    
+            </div>
+
+
+            {% endif %}
+            {% endfor %}   
+
+
+
+
+    </div>
+</div>
 
 
 {% endblock %}

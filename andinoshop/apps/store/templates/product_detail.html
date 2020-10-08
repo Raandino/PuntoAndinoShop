@@ -3,26 +3,45 @@
 {% block title %}{{ product.name }} | {% endblock %}
 
 {% block content %}
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            {% if product.category.parent %}
+                <li class="breadcrumb-item" ><a href="{% url 'category_detail' product.category.parent.slug %}" style="color: black;">{{product.category.parent.title}}</a></li>
+            {% endif %}
+                <li class="breadcrumb-item " ><a href="{% url 'category_detail' product.category.slug %}" style="color: black;">{{product.category.title}}</a></li>
+        </ol>
+ 
+    </nav>
+</div>
 <div id="productapp">
-    <div class="column" class= "mr-4">
-        <img :src="mainImage"  alt="">
-        <hr>
-        <div class="columns">
-            <div  v-for="image in images">
-                <figure style="cursor: pointer" class="thumbnail">
-                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" alt="">
-                </figure>
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row no-gutters  overflow-hidden flex-md-row mb-4 position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <img id="featured" :src="mainImage" alt="">
+            <div id="slide-wrapper">
+                <div id="slider">
+                    <div  v-for="image in images">
+                        <figure style="cursor: pointer" class="thumbnail">
+                            <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail" alt="">
+                        </figure>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="d-flex flex-wrap justify-content-center align-items-center">
-  
-    <div class="column">
-        <h6>{{product.brand}}</h6>
+        </div>
+        </div>
+
+        <div class="col-md-6 my-auto">
+            <h6>{{product.brand}}</h6>
         <h1>{{product.name}}</h1>
         <hr>
         <h3> {% if product.disccount_price %}
-            <del>C${{ product.price }}</del>
+            <del style="color: grey;">C${{ product.price }}</del>
             C${{ product.disccount_price }}
         {% else %}
         C${{ product.price }}
@@ -31,8 +50,10 @@
         <form class="form-inline">
         <a href="{{ product.get_add_to_cart_url }}" class="btn btn-success mb-2">Añadir al carrito</a>
     </form>
+        </div>
     </div>
 </div>
+
 </div>
 {% endblock %}
 

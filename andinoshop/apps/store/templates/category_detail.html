@@ -2,29 +2,70 @@
 
 {% block title %}{{ category.title }} | {% endblock %}
 {% block content %}
-<h1>{{category.title}}</h1>
-<div class="row">
-    {% for product in products %}
-        <div class="col-lg-2 ml-4 shadow-sm p-3 mb-5 bg-white rounded">
-            <img src="{{ product.thumbnail.url }}" class="rounded mx-auto d-block" alt="">
-           <div class="box-element">
-               
-               <h5 class="text-center">{{product.name}}</h6>
-               <hr>
-               <a class="btn btn-outline-secondary add-btn" href="{% url 'product_detail' category.slug product.slug %}">Ver mas</a>
-               <p class="float-right"> 
-                   {% if product.disccount_price %}
-                <del>C${{ product.price }}</del>
-                C${{ product.disccount_price }}
-            {% else %}
-            C${{ product.price }}
-            {% endif %}</p>
-           </div>
-
-        </div>
-        {% endfor %}   
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            {% if category.parent %}
+                <li class="breadcrumb-item" ><a href="{% url 'category_detail' category.parent.slug %}" style="color: black;">{{category.parent.title}}</a></li>
+            {% endif %}
+                <li class="breadcrumb-item active" >{{category.title}}</li>
+        </ol>
+ 
+    </nav>
 </div>
-        
+<div class="container">
+
+   
+
+
+
+    <div class="row">
+        {% for product in products %}
+            <div class=" col-xs-12 col-sm-6 col-md-6 col-lg-3 px-3 px-sm-2 px-md-2 px-lg-2 shadow p-3 mb-5 bg-white rounded">
+                <img src="{{ product.thumbnail.url }}" class="rounded mx-auto d-block " alt="">
+               <div class="box-element">
+                   
+                   <h6 class="text-center">{{product.name}}</h6>
+                   <hr>
+                   <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' category.slug product.slug %}">Ver mas</a>
+                   <p class="float-right"> 
+                       {% if product.disccount_price %}
+                    <del style="color: grey;">C${{ product.price }}</del>
+                   <span class="font-weight-bold">C${{ product.disccount_price }}</span> 
+                {% else %}
+               C${{ product.price }}
+                {% endif %}</p>
+               </div>
+    
+            </div>
+            {% endfor %}   
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            
+               <p class="text-center">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</p> 
+           
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+ 
+
+
+
+
+
+</div>       
 
 
 {% endblock %}
