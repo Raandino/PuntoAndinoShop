@@ -39,9 +39,7 @@
         <div class="col-md-6 my-auto">
             <h6>{{product.brand}}</h6>
         <h1>{{product.name}}</h1>
-        {% if product.get_rating %}
         <h5>Estrellas: {{ product.get_rating|floatformat:1 }}</h5>
-        {% endif %}
 
         <hr>
         <h3> {% if product.disccount_price %}
