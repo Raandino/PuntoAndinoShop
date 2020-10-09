@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario
+from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
@@ -28,6 +28,13 @@ def search(request):
 
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        stars = request.POST.get('stars', 3)
+        content = request.POST.get('content', '')
+        review = ProductReview.objects.create(product=product, user=request.user, stars=stars, content=content)
+        
+        return redirect('product_detail', category_slug=category_slug, slug=slug)
 
     imagesstring = "{'thumbnail': '%s', 'image': '%s'}," % (product.thumbnail.url, product.image.url)
 

@@ -28,6 +28,7 @@
                <div class="box-element">
                    
                    <h6 class="text-center">{{product.name}}</h6>
+                   <h6>Estrellas: {{ product.get_rating|floatformat:1 }}</h6>
                    <hr>
                    <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' category.slug product.slug %}">Ver mas</a>
                    <p class="float-right"> 

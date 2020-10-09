@@ -79,6 +79,14 @@ class Product(models.Model):
 
         return thumbnail
 
+    def get_rating(self):
+        total = sum(int(review['stars']) for review in self.reviews.values())
+
+        if self.reviews.count() > 0:
+            return total / self.reviews.count()
+        else: 
+            return 0   
+
     def get_add_to_cart_url(self):
         return reverse("add-to-cart", kwargs={
             'slug': self.slug
@@ -105,6 +113,17 @@ class ProductImage(models.Model):
         thumbnail = File(thumb_io, name = image.name)
 
         return thumbnail 
+
+class ProductReview(models.Model):
+    product = models.ForeignKey(Product, related_name = 'reviews', on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'reviews', on_delete = models.CASCADE)
+
+    content = models.TextField(blank = True, null = True)
+    stars = models.IntegerField()
+
+    date_added = models.DateTimeField(auto_now_add = True)
+
+
 
 class OrderProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
