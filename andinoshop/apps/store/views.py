@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario, SubCategory
+from .models import Product, Category, OrderProduct, Order, Usuario
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
@@ -42,15 +42,20 @@ def product_detail(request, slug, category_slug):
 
 
 def category_detail(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    products = category.products.all()
-    paginator = Paginator(products, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    products = Product.objects.all()
+    subcategories = []
+
+    if slug:
+        category = get_object_or_404(Category, slug=slug)
+        products = products.filter(Q(category__parent=category)|Q(category=category))
+        subcategories = Category.objects.filter(parent = category)
+
+        
+
     context = {
         'category': category,
+        'subcategories': subcategories,
         'products' : products,
-        'page_obj': page_obj
     }
 
     return render(request, 'category_detail.html', context)

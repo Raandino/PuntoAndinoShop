@@ -31,13 +31,6 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
-class SubCategory(models.Model):
-    title = models.CharField(max_length= 200, null = True)
-    slug = models.SlugField(max_length=200, null = True) 
-    category = models.ForeignKey(Category, null = True, on_delete = models.CASCADE)
-    
-    def __str__(self):
-        return self.title
 
 class Brand(models.Model):
     name = models.CharField(max_length=200, null = True)
