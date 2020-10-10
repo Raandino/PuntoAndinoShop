@@ -44,7 +44,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=200)
     category = models.ForeignKey(Category, related_name='products', on_delete = models.CASCADE)
     parent = models.ForeignKey('self', related_name = 'variants', on_delete = models.CASCADE, blank = True, null = True)
-    brand = models.ForeignKey(Brand, related_name='products', null = True, on_delete = models.CASCADE)
+    brand = models.ForeignKey(Brand, null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
     disccount = models.BooleanField(default = False)

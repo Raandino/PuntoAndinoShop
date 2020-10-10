@@ -4,9 +4,10 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview
+from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
+from .filters import ProductFilter
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -47,22 +48,35 @@ def product_detail(request, slug, category_slug):
 
     return render(request, 'product_detail.html', context)
 
+def is_valid_queryparam(param):
+    return param != '' and param is not None
+
 
 def category_detail(request, slug):
+
     products = Product.objects.all()
-    subcategories = []
+    category = get_object_or_404(Category, slug=slug)
+    pricemin = request.GET.get('price_min')
+    pricemax = request.GET.get('price_max')
+    marca = request.GET.get('brand')
 
-    if slug:
-        category = get_object_or_404(Category, slug=slug)
-        products = products.filter(Q(category__parent=category)|Q(category=category))
-        subcategories = Category.objects.filter(parent = category)
+    products = products.filter(Q(category__parent=category)|Q(category=category))
+    q = products.order_by('brand').distinct('brand')
 
-        
+    if is_valid_queryparam(pricemin):
+        products = products.filter(price__gte=pricemin)
+
+    if is_valid_queryparam(pricemax):
+        products = products.filter(price__lt=pricemax)
+
+    if is_valid_queryparam(marca) and marca != 'Escoger...':
+        products = products.filter(brand__name=marca)
 
     context = {
         'category': category,
-        'subcategories': subcategories,
         'products' : products,
+        'q': q,
+
     }
 
     return render(request, 'category_detail.html', context)
