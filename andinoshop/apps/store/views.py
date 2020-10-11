@@ -29,7 +29,7 @@ def search(request):
 
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
-
+    usuario = Usuario.objects.all()
     related_products = list(product.category.products.filter(parent=None).exclude(id=product.id))
     if len(related_products) >= 3:
         related_products = random.sample(related_products, 3)
@@ -50,6 +50,7 @@ def product_detail(request, slug, category_slug):
         'product': product,
         'imagesstring': imagesstring,
         'related_products': related_products,
+        'usuario': usuario,
     }
 
     return render(request, 'product_detail.html', context)
@@ -88,7 +89,7 @@ def category_detail(request, slug):
         products = products.filter(disccount=True)
 
     if is_valid_queryparam(review) and review != 'Estrellas':
-        products = products.filter(reviews__stars=review)
+        products = products.filter(reviews__stars=review).distinct()
 
     context = {
         'category': category,

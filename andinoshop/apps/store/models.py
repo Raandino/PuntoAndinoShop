@@ -120,7 +120,7 @@ class ProductReview(models.Model):
     product = models.ForeignKey(Product, related_name = 'reviews', on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'reviews', on_delete = models.CASCADE)
 
-    content = models.TextField(blank = True, null = True)
+    content = models.TextField()
     stars = models.IntegerField()
 
     date_added = models.DateTimeField(auto_now_add = True)

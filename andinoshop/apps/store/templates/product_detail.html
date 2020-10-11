@@ -16,123 +16,168 @@
  
     </nav>
 </div>
+
 <div id="productapp">
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="row no-gutters  overflow-hidden flex-md-row mb-4 position-relative">
-            <div class="col p-4 d-flex flex-column position-static">
-                <img id="featured" :src="mainImage" alt="">
-            <div id="slide-wrapper">
-                <div id="slider">
-                    <div  v-for="image in images">
-                        <figure style="cursor: pointer" class="thumbnail">
-                            <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail" alt="">
-                        </figure>
+    <main class="mt-5 pt-4">
+        <div class="container dark-grey-text mt-5">
+            <div class="row wow fadein">
+                <div class="col-md-6 mb-4">
+                    <img id="featured" :src="mainImage" alt="" class="img-fluid">
+                    <div id="slide-wrapper">
+                        <div id="slider">
+                            <div  v-for="image in images">
+                                <figure  class="thumbnail">
+                                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail" alt="">
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-6 mb-4">
+                    <div class="p-4">
+
+                        {% if product.is_featured %}
+                        <div class="mb-3">
+                           
+                            <span class="badge red mr-1">Destacado</span>
+                          
+                        </div>
+                        {% endif %}
+
+                        <p class="lead font-weight-bold">{{product.name}}</p>
+                        <p class="lead">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                        <hr>
+                        <p class="lead">
+                            {% if product.disccount_price %}
+                            <span>
+                                <del style="color: grey;">C${{ product.price }}</del>
+                            </span>
+                            <span>C${{ product.disccount_price }}</span>
+                            {% else %}
+                            <span>C${{ product.price }}</span>
+                            {% endif %}
+                        </p>
+
+                        <p class="lead font-weight-bold">Descripcion</p>
+                        <p>{{product.description}}</p>
+
+                        <form action="" class="d-flex justify-content-left">
+                            <a href="{{ product.get_add_to_cart_url }}" class="btn btn-primary btn-md my-0 p">Añadir al carrito
+                                <i class="fas fa-shopping-cart ml-1"></i>
+                            </a>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
-        </div>
 
-        <div class="col-md-6 my-auto">
-            <h6>{{product.brand}}</h6>
-        <h1>{{product.name}}</h1>
-        <h5>Puntuacion: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</h5>
+            <hr>
+            <div class="row d-flex justify-content-center wow fadeIn">
+                <div class="col-md-6 text-center">
+                    <h4 class="my-4 h4">Productos Relacionados</h4>
+                </div>
+            </div>
+            <div class="row wow fadeIn mb-5">
+                {% for related_product in related_products %}
 
-        <hr>
-        <h3> {% if product.disccount_price %}
-            <del style="color: grey;">C${{ product.price }}</del>
-            C${{ product.disccount_price }}
-        {% else %}
-        C${{ product.price }}
-        {% endif %}</h3>
-        <p>{{product.description}}</p>
-        <form class="form-inline">
-        <a href="{{ product.get_add_to_cart_url }}" class="btn btn-success mb-2">Añadir al carrito</a>
-    </form>
-        </div>
-    </div>
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <img src="{{ related_product.thumbnail.url }}" class="img-fluid mx-auto d-block " alt="">
+                        
+                        <p class="mb-1 text-center">{{ related_product.name }}</p>
+                        <p class="mb-1 text-center">
+                            {% if related_product.disccount_price %}
+                                <small class="mr-1">
+                                    <s style="color: grey;">C${{ related_product.price }}</s>
+                                </small>
+                                <strong>C${{ related_product.disccount_price }}</strong>
+                                {% else %}
+                                <strong>C${{ related_product.price }}</strong>
+                                {% endif %}
+                        </p>
 
-    <h2>Productos relacionados</h2>
-    {% for related_product in related_products %}
-    <div class=" col">
-        <img src="{{ related_product.thumbnail.url }}" class="rounded mx-auto d-block " alt="">
-       <div class="box-element">
-           
-           <h6 class="text-center">{{related_product.name}}</h6>
-           <h6>Puntuacion: {% if related_product.get_rating == 0 %}No hay reviews{% else %} {{ related_product.get_rating|floatformat:1 }} {% endif %}</h6>
-           <hr>
-           <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' related_product.category.slug related_product.slug %}">Ver mas</a>
-           <p class="float-right"> 
-               {% if related_product.disccount_price %}
-            <del style="color: grey;">C${{ related_product.price }}</del>
-           <span>C${{ related_product.disccount_price }}</span> 
-        {% else %}
-       C${{ related_product.price }}
-        {% endif %}</p>
-       </div>
+                        <p class="mb-1 text-center">Puntuacion: {% if related_product.get_rating == 0 %}No hay reviews{% else %} {{ related_product.get_rating|floatformat:1 }} {% endif %}</p>
 
-    </div>
-    {% endfor %} 
-
-    <h2>Reseñas</h2>
-
-    <div>
-        {% for review in product.reviews.all %}
-            <div>
-                <p>
-                    <strong>Fecha: </strong>{{ review.date_added|date:"Y-m-d"}},
-                    <strong>Puntuacion: </strong>{{ review.stars }}
-                </p>
-
-                    {{ review.content }}
+                        <div class="text-center">
+                        <a class="btn btn-indigo btn-rounded btn-sm px-3" href="{% url 'product_detail' related_product.category.slug related_product.slug %}">Ver mas</a>
+                        </div>
+                </div>
+                {% endfor %}
             </div>
 
-            {% empty %}
-            <div>
-                No hay reseñas todavia
-            </div>
-        {% endfor %}
-    </div>
+            <hr>
+            <section class="dark-grey-text mb-5">
+                <h3 class="font-weight bold text-center mb-5">Reseñas del producto</h3>
+            <div class="row wow fadein">
+                <div class="col-md-6 mb-4">
+                    {% for review in product.reviews.all %}
+                        <div class="media b-3">
+                            <img src="{{review.user.usuario.profile_pic.url}}" class="card-img-100 rounded-circle z-depth-1-half d-flex mr-3" alt="">
+                            
+                            <div class="media-body">
+                                <h5 class="user-name font-weight-bold">{{review.user.usuario.name}}</h5>
+                                <h6>Puntuación: {{review.stars}}</h6>
+                                <div class="card-data">
+                                    <ul class="list-unstyled mb-1">
+                                        <li class="comment-date font-small grey-text">
+                                            <i class="far fa-clock"></i>{{ review.date_added|date:"Y-m-d"}}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <p class="dark-grey-text article">
+                                    {{ review.content }}
+                                </p>
+                            </div>
+                        </div>
 
-    <div>
-        {% if request.user.is_authenticated %}
-            <form action="" method="POST">
-                {% csrf_token %}
 
-                <div class="form-group">
-                    <label for="">Estrellas</label>
-                    <select name="stars" id="" class="form-control">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3" selected>3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                        {% empty %}
+                        <div>
+                            <h5 class="font-weight-bold">No hay reseñas por el momento</h5>
+                        </div>
+                    {% endfor %}
+
                 </div>
 
-                <div class="form-group">
-                    <label for="">Contenido</label>
-                    <textarea class="form-control" name="content" id=""></textarea>
-                </div>
+                <div class="col-md-6 mb-4">
+                    <h5 class="font-weight-bold ">Escribe una reseña</h5>
+                    {% if request.user.is_authenticated %}
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                            <label for="stars">Puntuacion</label>
+                            <select class="browser-default custom-select" name="stars" id="stars">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                              </select>
+                            </div>
+                              <div class="form-group">
+                                <label for="content">Contenido</label>
+                                <textarea class="form-control" name="content" id="content" rows="7" required></textarea>
+                              </div>
+                              
+                              <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
 
-                <button type="submit" class="btn btn-primary">Enviar</button>
-            </form>
-
-            {% else %}
-                <p>Inicia Sesion para poder mandar una review</p>
-
-        {% endif %}
-    </div>
-
+                    {% else %}
+                    <p>Inicia Sesion para poder escribir una reseña</p>
     
+                    {% endif %}
+                </div>
 
+            </div>
+            </section>
 
+        </div>
+    </main>
 </div>
 
-</div>
+
+
 {% endblock %}
 
 {% block scripts %}
