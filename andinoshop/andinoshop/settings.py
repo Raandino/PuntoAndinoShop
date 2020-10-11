@@ -49,7 +49,6 @@ INSTALLED_APPS = [
 
     'apps.core',
     'apps.store',
-    'django_filters'
 ]
 
 MIDDLEWARE = [

@@ -39,7 +39,7 @@
         <div class="col-md-6 my-auto">
             <h6>{{product.brand}}</h6>
         <h1>{{product.name}}</h1>
-        <h5>Estrellas: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</h5>
+        <h5>Puntuacion: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</h5>
 
         <hr>
         <h3> {% if product.disccount_price %}
@@ -55,6 +55,28 @@
         </div>
     </div>
 
+    <h2>Productos relacionados</h2>
+    {% for related_product in related_products %}
+    <div class=" col">
+        <img src="{{ related_product.thumbnail.url }}" class="rounded mx-auto d-block " alt="">
+       <div class="box-element">
+           
+           <h6 class="text-center">{{related_product.name}}</h6>
+           <h6>Puntuacion: {% if related_product.get_rating == 0 %}No hay reviews{% else %} {{ related_product.get_rating|floatformat:1 }} {% endif %}</h6>
+           <hr>
+           <a class="btn btn-sm btn-outline-info add-btn" href="{% url 'product_detail' related_product.category.slug related_product.slug %}">Ver mas</a>
+           <p class="float-right"> 
+               {% if related_product.disccount_price %}
+            <del style="color: grey;">C${{ related_product.price }}</del>
+           <span>C${{ related_product.disccount_price }}</span> 
+        {% else %}
+       C${{ related_product.price }}
+        {% endif %}</p>
+       </div>
+
+    </div>
+    {% endfor %} 
+
     <h2>Reseñas</h2>
 
     <div>
@@ -62,7 +84,7 @@
             <div>
                 <p>
                     <strong>Fecha: </strong>{{ review.date_added|date:"Y-m-d"}},
-                    <strong>Estrellas: </strong>{{ review.stars }}
+                    <strong>Puntuacion: </strong>{{ review.stars }}
                 </p>
 
                     {{ review.content }}
@@ -104,6 +126,8 @@
 
         {% endif %}
     </div>
+
+    
 
 
 </div>

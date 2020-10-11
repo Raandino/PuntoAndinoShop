@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.utils import timezone
@@ -7,7 +8,6 @@ from .forms import CreateUserForm, CustomerForm
 from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
-from .filters import ProductFilter
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -30,6 +30,11 @@ def search(request):
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
 
+    related_products = list(product.category.products.filter(parent=None).exclude(id=product.id))
+    if len(related_products) >= 3:
+        related_products = random.sample(related_products, 3)
+
+        
     if request.method == 'POST' and request.user.is_authenticated:
         stars = request.POST.get('stars', 3)
         content = request.POST.get('content', '')
@@ -43,7 +48,8 @@ def product_detail(request, slug, category_slug):
         imagesstring = imagesstring + ("{'thumbnail': '%s', 'image': '%s'}," % (image.thumbnail.url, image.image.url))
     context = {
         'product': product,
-        'imagesstring': imagesstring
+        'imagesstring': imagesstring,
+        'related_products': related_products,
     }
 
     return render(request, 'product_detail.html', context)
@@ -59,6 +65,9 @@ def category_detail(request, slug):
     pricemin = request.GET.get('price_min')
     pricemax = request.GET.get('price_max')
     marca = request.GET.get('brand')
+    featured = request.GET.get('featured')
+    discount = request.GET.get('discount')
+    review = request.GET.get('review')
 
     products = products.filter(Q(category__parent=category)|Q(category=category))
     q = products.order_by('brand').distinct('brand')
@@ -71,6 +80,15 @@ def category_detail(request, slug):
 
     if is_valid_queryparam(marca) and marca != 'Escoger...':
         products = products.filter(brand__name=marca)
+
+    if featured == 'on':
+        products = products.filter(is_featured=True)
+
+    if discount == 'on':
+        products = products.filter(disccount=True)
+
+    if is_valid_queryparam(review) and review != 'Estrellas':
+        products = products.filter(reviews__stars=review)
 
     context = {
         'category': category,

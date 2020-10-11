@@ -47,8 +47,10 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
+    is_featured = models.BooleanField(default = False)
     disccount = models.BooleanField(default = False)
     disccount_price = models.FloatField(blank = True, null = True)
+
     
     image = models.ImageField(upload_to = 'images/',blank = True, null = True)
     thumbnail = models.ImageField(upload_to = 'images/', blank = True, null = True) 
