@@ -47,6 +47,10 @@
                             {% if product.disccount_price %}
                             <span class="badge blue mr-1">Descuento</span>
                             {% endif %}
+
+                            {% if product.is_new %}
+                            <span class="badge badge-default mr-1">Nuevo</span>
+                            {% endif %}
                         </div>
                        
                         <p class="text-muted">{{product.brand.name}}</p>

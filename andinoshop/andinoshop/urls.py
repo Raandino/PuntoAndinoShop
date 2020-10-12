@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from apps.core.views import frontpage
-from apps.store.views import product_detail,featured, category_detail, search, registerPage, loginPage, logoutUser, profilePage, cart, add_to_cart, discount
+from apps.store.views import product_detail,featured, category_detail, search, registerPage, loginPage, logoutUser, profilePage, cart, add_to_cart, discount, new
 
 
 urlpatterns = [
@@ -30,6 +30,7 @@ urlpatterns = [
     path('login/', loginPage, name = 'loginPage'),
     path('logout/', logoutUser, name = 'logout'),
     path('featured/', featured, name='featured'),
+    path('novedades/', new, name='new'),
     path('discount/', discount, name='discount'),
     path('cart/', cart, name = 'cart'),
     path('profile/', profilePage, name = 'profilePage'),

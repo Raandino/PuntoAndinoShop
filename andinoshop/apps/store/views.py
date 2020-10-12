@@ -74,6 +74,7 @@ def category_detail(request, slug):
     featured = request.GET.get('featured')
     discount = request.GET.get('discount')
     review = request.GET.get('review')
+    new = request.GET.get('new')
 
     products = products.filter(Q(category__parent=category)|Q(category=category))
     q = products.order_by('brand').distinct('brand')
@@ -92,6 +93,9 @@ def category_detail(request, slug):
 
     if discount == 'on':
         products = products.filter(disccount=True)
+
+    if new == 'on':
+        products = products.filter(is_new=True)
 
     if is_valid_queryparam(review) and review != 'Estrellas':
         products = products.filter(reviews__stars=review).distinct()
@@ -122,6 +126,17 @@ def featured(request):
     }
 
     return render(request, 'featured_products.html', context)
+
+def new(request):
+    products = Product.objects.filter(is_new=True)
+    p = Paginator(products, 16)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    context = {
+        'products': page_obj,
+    }
+
+    return render(request, 'novedades.html', context)
     
 def discount(request):
     products = Product.objects.filter(disccount=True)

@@ -48,6 +48,7 @@ class Product(models.Model):
     description = models.TextField(blank = True, null = True)
     price = models.FloatField(null = True)
     is_featured = models.BooleanField(default = False)
+    is_new = models.BooleanField(default = False)
     disccount = models.BooleanField(default = False)
     disccount_price = models.FloatField(blank = True, null = True)
 
