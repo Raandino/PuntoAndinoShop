@@ -85,6 +85,23 @@
     margin: 5px;
 }
 
+#esto{
+    height: 40vh;
+}
 
+#cover{
+    background-repeat: no-repeat; 
+    background-size: cover;
+}
 
+.view{
+    height: 40vh;
+}
+
+#ver{
+    color: black;
+}
+#ver:hover, #cora:hover{
+    color: #CC0000;
+}
 

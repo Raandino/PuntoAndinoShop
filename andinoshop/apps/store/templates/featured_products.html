@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %} Destacados| {% endblock %}
+{% block content %}
+
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item active" >Destacados</li>
+        </ol>
+ 
+    </nav>
+</div>
+
+<div class="container my-5">
+    <section>
+        <h3 class="font-weight-bold dark-grey-text text-center mb-5">
+            Productos Destacados
+        </h3>
+
+        <div class="row">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card card-ecommerce">
+                    <div class="overlay">
+                        <img src="{{product.thumbnail.url}}" alt="" class="img-fluid mx-auto d-block" style=>
+                        <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                            <div class="mask rgba-white-slight"></div>
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><strong><a href="{% url 'product_detail' product.category.slug product.slug %}" class="dark-grey-text">{{product.name}}</a></strong></h6>
+                        <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                    
+                        <hr>
+                                <span class="float-left card-text">{% if product.disccount_price %}
+                                    <del style="color: grey;">C${{ product.price }}</del>
+                                    C${{ product.disccount_price }}
+                                {% else %}
+                                    C${{ product.price }}
+                                {% endif %}</span>
+
+                                <span class="float-right">
+                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' product.category.slug product.slug %}">
+                                        <i class="fas fa-eye ml-3"></i>
+                                      </a>
+                                      <a class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                        <i class="fas fa-heart ml-3"></i>
+                                      </a>
+                                </span>
+                   
+                    </div>
+
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <ul class="pagination pagination-circle pg-blue">
+                
+                <li class="page-item"><a href="?page=1" class="page-link">Inicio</a></li>
+                {% if products.has_previous %}
+
+                    <li class="page-item"><a href="?page={{ products.previous_page_number }}" class="page-link">Anterior</a></li>
+                {% endif %}
+
+                {% for page in products.paginator %}
+                <li class="page-item" id="paginas"><a href="?page={{ page.number }}" class="page-link">{{ page.number }}</a></li>
+                {% endfor %}
+
+                {% if products.has_next %}
+                <li class="page-item"><a href="?page={{ products.next_page_number }}" class="page-link">Siguiente</a></li>
+                <li class="page-item"><a href="?page={{ products.paginator.num_pages }}" class="page-link">Ultimo</a></li>
+                {% endif %}
+
+            </ul>
+ 
+        </div>
+    </section>
+</div>
+
+{% endblock %}

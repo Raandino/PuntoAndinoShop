@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render,  redirect
 from apps.store.decorators import allowed_users, admin_only
 
@@ -6,9 +7,15 @@ from apps.store.models import Product, Category
 
 
 def frontpage(request):
-    products = Product.objects.filter(disccount = True)
+    products = list(Product.objects.filter(disccount = True))
+    featured = list(Product.objects.filter(is_featured = True))
+    if len(featured) >= 3:
+        featured = random.sample(featured, 3)
 
+    if len(products) >= 3:
+        products = random.sample(products, 3)
     context = {
-        'products': products
+        'products': products,
+        'featured': featured,
     }
     return render(request, 'frontpage.html', context)

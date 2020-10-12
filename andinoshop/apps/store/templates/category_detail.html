@@ -16,13 +16,16 @@
     </nav>
 </div>
 
-<div class="container">
+
+<div class="container wow fadeIn">
     <div class="row">
         <div class="col-12 col-sm-3">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">Filtro</h4>
+
             <form action="" method="GET">
                 <div class="form-group">
                     <label for="brand">Marca</label>
-                    <select id="brand" class="form-control" name="brand" id="">
+                    <select id="brand" class="form-control browser-default custom-select" name="brand" id="">
                        <option selected>Escoger...</option> 
                        {% for brand in q %}
                             <option value="{{ brand.brand }}">{{ brand.brand }}</option>
@@ -41,22 +44,22 @@
                 
                 <p>Ordenar por:</p>
                 <div class="form-group">
-                    <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="featured" name="featured">
-                    <label class="form-check-label" for="featured">Destacados</label>
+                    <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="featured" name="featured">
+                    <label class="custom-control-label" for="featured">Destacados</label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="discount" name="discount">
-                    <label class="form-check-label" for="discount">Descuento</label>
+                    <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="discount" name="discount">
+                    <label class="custom-control-label" for="discount">Descuento</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="review">Puntuacion</label>
-                    <select id="review" class="form-control" name="review" id="">
+                    <select id="review" class="form-control browser-default custom-select" name="review" id="">
                        <option selected>Estrellas</option> 
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -67,42 +70,81 @@
                     </select>
                 </div>
                 <button class="btn btn-primary" type="submit">Filtrar</button>
+                
+
             </form>
+
+
         </div>
         <div class="col">
             <div class="row">
                 {% for product in products %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card">
-                        <img class="card-img-top" src="{{product.thumbnail.url}}" alt="Card image cap">
-                        <div class="card-body">
-                            <h6 class="card-title">{{product.name}}</h6>
-                            <hr>
-                            <p class="card-text text-center">{% if product.disccount_price %}
-                                <del style="color: grey;">C${{ product.price }}</del>
-                                C${{ product.disccount_price }}
-                            {% else %}
-                                C${{ product.price }}
-                            {% endif %}</p>
-                        
+                    <div class="col-lg-4 col-md-12 mb-4">
+                        <div class="card card-ecommerce">
+                            <div class="overlay">
+                                <img src="{{ product.thumbnail.url}}" class="img-fluid mx-auto d-block" alt="">
+                                <a>
+                                    <div class="mask rgba-white slight">
 
-                                <div class="text-center">
-                                    <a href="{% url 'product_detail' product.category.slug product.slug %}" class="btn btn-info ">Ver mas</a>
-                                </div>
-                      
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="card-body">
+                                <h6 class="card-title mb-1">
+                                <strong><a href="{% url 'product_detail' product.category.slug product.slug %}" class="dark-grey-text">{{product.name}}</a></strong> 
+                                </h6>
+
+                                <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                                
+                                <hr>
+                                <span class="float-left card-text">{% if product.disccount_price %}
+                                    <del style="color: grey;">C${{ product.price }}</del>
+                                    <strong> C${{ product.disccount_price }}</strong>
+                                {% else %}
+                                   <strong>C${{ product.price }}</strong>
+                                {% endif %}</span>
+
+                                <span class="float-right">
+                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' product.category.slug product.slug %}">
+                                        <i class="fas fa-eye ml-3"></i>
+                                      </a>
+                                      <a class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                        <i class="fas fa-heart ml-3"></i>
+                                      </a>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
                 {% endfor %}
+                
+            
+            </div>
+            <div class="text-center">
+                <ul class="pagination pagination-circle pg-blue">
+                    
+                    <li class="page-item"><a href="?page=1" class="page-link">Inicio</a></li>
+                    {% if products.has_previous %}
 
+                        <li class="page-item"><a href="?page={{ products.previous_page_number }}" class="page-link">Anterior</a></li>
+                    {% endif %}
+
+                    {% for page in products.paginator %}
+                    <li class="page-item" id="paginas"><a href="?page={{ page.number }}" class="page-link">{{ page.number }}</a></li>
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                    <li class="page-item"><a href="?page={{ products.next_page_number }}" class="page-link">Siguiente</a></li>
+                    <li class="page-item"><a href="?page={{ products.paginator.num_pages }}" class="page-link">Ultimo</a></li>
+                    {% endif %}
+
+                </ul>
+     
             </div>
         </div>
-
     </div>
 </div>
-
-
-
 
 
 

@@ -39,14 +39,17 @@
                 <div class="col-md-6 mb-4">
                     <div class="p-4">
 
-                        {% if product.is_featured %}
+                        
                         <div class="mb-3">
-                           
+                            {% if product.is_featured %}
                             <span class="badge red mr-1">Destacado</span>
-                          
+                            {% endif %}
+                            {% if product.disccount_price %}
+                            <span class="badge blue mr-1">Descuento</span>
+                            {% endif %}
                         </div>
-                        {% endif %}
-
+                       
+                        <p class="text-muted">{{product.brand.name}}</p>
                         <p class="lead font-weight-bold">{{product.name}}</p>
                         <p class="lead">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
                         <hr>
@@ -65,7 +68,7 @@
                         <p>{{product.description}}</p>
 
                         <form action="" class="d-flex justify-content-left">
-                            <a href="{{ product.get_add_to_cart_url }}" class="btn btn-primary btn-md my-0 p">Añadir al carrito
+                            <a href="{{ product.get_add_to_cart_url }}" class="btn btn-secondary btn-md my-0 p">Añadir al carrito
                                 <i class="fas fa-shopping-cart ml-1"></i>
                             </a>
                         </form>
@@ -97,7 +100,7 @@
                                 {% endif %}
                         </p>
 
-                        <p class="mb-1 text-center">Puntuacion: {% if related_product.get_rating == 0 %}No hay reviews{% else %} {{ related_product.get_rating|floatformat:1 }} {% endif %}</p>
+                        <p class="mb-1 text-center">Puntuación: {% if related_product.get_rating == 0 %}No hay reviews{% else %} {{ related_product.get_rating|floatformat:1 }} {% endif %}</p>
 
                         <div class="text-center">
                         <a class="btn btn-indigo btn-rounded btn-sm px-3" href="{% url 'product_detail' related_product.category.slug related_product.slug %}">Ver mas</a>

@@ -66,6 +66,14 @@ class Product(models.Model):
 
         super().save(*args, **kwargs)
 
+    def change_price(disccount_price, price, disccount):
+        if disccount == True:
+            var = price
+            price = disccount_price
+            disccount_price = var
+        return disccount_price, price
+        
+
     def get_absolute_url(self):
         return '/%s/%s/' % (self.category.slug, self.slug)
 

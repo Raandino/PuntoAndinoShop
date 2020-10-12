@@ -8,9 +8,10 @@ from .forms import CreateUserForm, CustomerForm
 from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
 
 # Create your views here.
 
@@ -18,9 +19,13 @@ def search(request):
     query = request.GET.get('query')
     products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query))
 
+    p = Paginator(products, 16)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+
     context = {
         'query': query,
-        'products': products
+        'products': page_obj
     }
 
     return render(request, 'search.html', context)
@@ -91,15 +96,43 @@ def category_detail(request, slug):
     if is_valid_queryparam(review) and review != 'Estrellas':
         products = products.filter(reviews__stars=review).distinct()
 
+    p = Paginator(products, 9)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    
     context = {
         'category': category,
-        'products' : products,
+        'products' : page_obj,
         'q': q,
 
     }
 
     return render(request, 'category_detail.html', context)
 
+
+
+
+def featured(request):
+    products = Product.objects.filter(is_featured=True)
+    p = Paginator(products, 16)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    context = {
+        'products': page_obj,
+    }
+
+    return render(request, 'featured_products.html', context)
+    
+def discount(request):
+    products = Product.objects.filter(disccount=True)
+    p = Paginator(products, 16)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    context = {
+        'products': page_obj,
+    }
+
+    return render(request, 'discount_page.html', context)
 
 
 #def add_to_cart(request, slug):
