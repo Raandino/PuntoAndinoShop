@@ -24,10 +24,10 @@
             {% for product in products %}
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="card card-ecommerce">
-                    <div class="overlay">
+                    <div class="view overlay">
                         <img src="{{product.thumbnail.url}}" alt="" class="img-fluid mx-auto d-block" style=>
                         <a href="{% url 'product_detail' product.category.slug product.slug %}">
-                            <div class="mask rgba-white-slight"></div>
+                            <div class="mask rgba-white-light"></div>
                         </a>
                     </div>
 
@@ -36,9 +36,9 @@
                         <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
                     
                         <hr>
-                                <span class="float-left card-text">{% if product.disccount_price %}
-                                    <del style="color: grey;">C${{ product.price }}</del>
-                                    C${{ product.disccount_price }}
+                                <span class="float-left card-text">{% if product.disccount %}
+                                    <del style="color: grey;">C${{ product.original_price }}</del>
+                                    C${{ product.price }}
                                 {% else %}
                                     C${{ product.price }}
                                 {% endif %}</span>

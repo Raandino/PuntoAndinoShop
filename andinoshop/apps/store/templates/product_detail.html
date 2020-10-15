@@ -44,7 +44,7 @@
                             {% if product.is_featured %}
                             <span class="badge red mr-1">Destacado</span>
                             {% endif %}
-                            {% if product.disccount_price %}
+                            {% if product.disccount %}
                             <span class="badge blue mr-1">Descuento</span>
                             {% endif %}
 
@@ -58,11 +58,11 @@
                         <p class="lead">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
                         <hr>
                         <p class="lead">
-                            {% if product.disccount_price %}
+                            {% if product.disccount %}
                             <span>
-                                <del style="color: grey;">C${{ product.price }}</del>
+                                <del style="color: grey;">C${{ product.original_price }}</del>
                             </span>
-                            <span>C${{ product.disccount_price }}</span>
+                            <span>C${{ product.price }}</span>
                             {% else %}
                             <span>C${{ product.price }}</span>
                             {% endif %}
@@ -90,15 +90,21 @@
                 {% for related_product in related_products %}
 
                 <div class="col-lg-4 col-md-12 mb-4">
-                    <img src="{{ related_product.thumbnail.url }}" class="img-fluid mx-auto d-block " alt="">
+                    <div class="view overlay">
+                        <img src="{{ related_product.thumbnail.url }}" alt="" class="img-fluid mx-auto d-block" style=>
+                        <a href="{% url 'product_detail' related_product.category.slug related_product.slug %}">
+                            <div class="mask rgba-white-light"></div>
+                        </a>
+                    </div>
+
                         
                         <p class="mb-1 text-center">{{ related_product.name }}</p>
                         <p class="mb-1 text-center">
-                            {% if related_product.disccount_price %}
+                            {% if related_product.disccount %}
                                 <small class="mr-1">
-                                    <s style="color: grey;">C${{ related_product.price }}</s>
+                                    <s style="color: grey;">C${{ related_product.original_price }}</s>
                                 </small>
-                                <strong>C${{ related_product.disccount_price }}</strong>
+                                <strong>C${{ related_product.price }}</strong>
                                 {% else %}
                                 <strong>C${{ related_product.price }}</strong>
                                 {% endif %}

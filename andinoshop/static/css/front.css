@@ -92,11 +92,9 @@
 #cover{
     background-repeat: no-repeat; 
     background-size: cover;
-}
-
-.view{
     height: 40vh;
 }
+
 
 #ver{
     color: black;

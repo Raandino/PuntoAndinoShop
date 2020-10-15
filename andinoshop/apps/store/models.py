@@ -46,11 +46,13 @@ class Product(models.Model):
     parent = models.ForeignKey('self', related_name = 'variants', on_delete = models.CASCADE, blank = True, null = True)
     brand = models.ForeignKey(Brand, null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
-    price = models.FloatField(null = True)
+    original_price = models.FloatField(blank=True, null=True)
+    price = models.FloatField(null = True, blank=True, default=0)
     is_featured = models.BooleanField(default = False)
     is_new = models.BooleanField(default = False)
     disccount = models.BooleanField(default = False)
-    disccount_price = models.FloatField(blank = True, null = True)
+    dis = models.IntegerField(blank=True, default = 0)
+    
 
     
     image = models.ImageField(upload_to = 'images/',blank = True, null = True)
@@ -64,15 +66,18 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         self.thumbnail = self.make_thumbnail(self.image)
+        if not self.pk:
+            self.price = self.original_price
 
+        if self.disccount:
+            self.price = int(self.price * (100 - self.dis)/100)
+        
+        else: 
+            self.price = self.original_price
+
+        
         super().save(*args, **kwargs)
-
-    def change_price(disccount_price, price, disccount):
-        if disccount == True:
-            var = price
-            price = disccount_price
-            disccount_price = var
-        return disccount_price, price
+        
         
 
     def get_absolute_url(self):

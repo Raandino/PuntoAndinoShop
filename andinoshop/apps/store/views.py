@@ -69,12 +69,15 @@ def category_detail(request, slug):
     products = Product.objects.all()
     category = get_object_or_404(Category, slug=slug)
     pricemin = request.GET.get('price_min')
-    pricemax = request.GET.get('price_max')
-    marca = request.GET.get('brand')
+    pricemax = request.GET.get('price_max')  
     featured = request.GET.get('featured')
     discount = request.GET.get('discount')
     review = request.GET.get('review')
+    sorting = request.GET.get('sorting')
     new = request.GET.get('new')
+    marca = request.GET.get('test')
+    marca_vals = set(request.GET.getlist('test'))
+
 
     products = products.filter(Q(category__parent=category)|Q(category=category))
     q = products.order_by('brand').distinct('brand')
@@ -85,8 +88,9 @@ def category_detail(request, slug):
     if is_valid_queryparam(pricemax):
         products = products.filter(price__lt=pricemax)
 
-    if is_valid_queryparam(marca) and marca != 'Escoger...':
-        products = products.filter(brand__name=marca)
+    if marca :
+        products = products.filter(brand__name__in=request.GET.getlist('test'))
+
 
     if featured == 'on':
         products = products.filter(is_featured=True)
@@ -97,17 +101,34 @@ def category_detail(request, slug):
     if new == 'on':
         products = products.filter(is_new=True)
 
+
     if is_valid_queryparam(review) and review != 'Estrellas':
         products = products.filter(reviews__stars=review).distinct()
 
+    if is_valid_queryparam(sorting):
+        products = products.order_by(sorting)
+
+    
     p = Paginator(products, 9)
     page_number = request.GET.get('page')
-    page_obj = p.get_page(page_number)
+    try:
+        page_obj = p.get_page(page_number)
+    except EmptyPage:
+        page_obj = p.get_page(1)
     
     context = {
         'category': category,
         'products' : page_obj,
         'q': q,
+        'pricemin': pricemin,
+        'pricemax': pricemax,
+        'sorting': sorting,
+        'featured': featured,
+        'discount': discount,
+        'new': new,
+        'review': review,
+        'marca': marca,
+        'marca_vals': marca_vals,
 
     }
 
@@ -118,7 +139,7 @@ def category_detail(request, slug):
 
 def featured(request):
     products = Product.objects.filter(is_featured=True)
-    p = Paginator(products, 16)
+    p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
     context = {
@@ -129,7 +150,7 @@ def featured(request):
 
 def new(request):
     products = Product.objects.filter(is_new=True)
-    p = Paginator(products, 16)
+    p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
     context = {

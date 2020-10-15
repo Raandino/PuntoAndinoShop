@@ -22,57 +22,69 @@
         <div class="col-12 col-sm-3">
             <h4 class="d-flex justify-content-between align-items-center mb-3">Filtro</h4>
 
-            <form action="" method="GET">
+            <form action="{% url 'category_detail' category.slug %}" method="GET">
+
                 <div class="form-group">
-                    <label for="brand">Marca</label>
-                    <select id="brand" class="form-control browser-default custom-select" name="brand" id="">
-                       <option selected>Escoger...</option> 
-                       {% for brand in q %}
-                            <option value="{{ brand.brand }}">{{ brand.brand }}</option>
-                       {% endfor %}
-                    </select>
+                    <label >Marca</label>
+                    {% for brand in q %}
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="{{brand.brand}}" name="test" value="{{brand.brand}}">
+
+                        <label class="custom-control-label" for="{{brand.brand}}" style="cursor: pointer;">{{brand.brand}}</label>
+                        </div>
+                    {% endfor %}
+                    <label for="">{{marca_vals}}</label>
                 </div>
 
                 <div class="form-group">
                     <label for="pricemin">Precio minimo</label>
-                    <input type="number" min=0 class="form-control" id="pricemin" name="price_min" placeholder="0">
+                    <input type="number" min=0 class="form-control" id="pricemin" name="price_min" placeholder="0" value="{{pricemin}}">
                 </div>
                 <div class="form-group">
                     <label for="pricemax">Precio Maximo</label>
-                    <input type="number" min=0 class="form-control" id="pricemax" name="price_max" placeholder="1000?">
+                    <input type="number" min=0 class="form-control" id="pricemax" name="price_max" placeholder="1000?" value="{{pricemax}}">
                 </div>
                 
                 <p>Ordenar por:</p>
                 <div class="form-group">
+                    <select id="sorting" class="form-control browser-default custom-select" name="sorting" id="">
+
+                            <option value="-date_added"{% if sorting == '-date_added' %} selected{% endif %}>Nuevo-ultimo</option>
+                            <option value="price"{% if sorting == 'price'%} selected{% endif %}>Precio bajo-alto</option>
+                            <option value="-price"{% if sorting == '-price'%} selected{% endif %}>Precio alto-bajo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="featured" name="featured">
-                    <label class="custom-control-label" for="featured">Destacados</label>
+                    <input type="checkbox" class="custom-control-input" id="featured" name="featured" {% if featured %} checked="checked" {%endif%}>
+                    <label class="custom-control-label" for="featured" style="cursor: pointer;">Destacados</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="discount" name="discount">
-                    <label class="custom-control-label" for="discount">Descuento</label>
+                    <input type="checkbox" class="custom-control-input" id="discount" name="discount"{% if discount %} checked="checked" {%endif%}>
+                    <label class="custom-control-label" for="discount" style="cursor: pointer;">Descuento</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="new" name="new">
-                    <label class="custom-control-label" for="new">Novedad</label>
+                    <input type="checkbox" class="custom-control-input" id="new" name="new" {% if new %} checked="checked" {%endif%}>
+                    <label class="custom-control-label" for="new" style="cursor: pointer;">Novedad</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="review">Puntuacion</label>
-                    <select id="review" class="form-control browser-default custom-select" name="review" id="">
-                       <option selected>Estrellas</option> 
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                    <select id="review" class="form-control browser-default custom-select" name="review" id="" >
+                       <option selected >Estrellas</option> 
+                            <option value="1" {% if review == '1' %} selected{% endif %}>1</option>
+                            <option value="2" {% if review == '2' %} selected{% endif %}>2</option>
+                            <option value="3" {% if review == '3' %} selected{% endif %}>3</option>
+                            <option value="4" {% if review == '4' %} selected{% endif %}>4</option>
+                            <option value="5" {% if review == '5' %} selected{% endif %}>5</option>
 
                     </select>
                 </div>
@@ -88,10 +100,10 @@
                 {% for product in products %}
                     <div class="col-lg-4 col-md-12 mb-4">
                         <div class="card card-ecommerce">
-                            <div class="overlay">
+                            <div class="view overlay">
                                 <img src="{{ product.thumbnail.url}}" class="img-fluid mx-auto d-block" alt="">
-                                <a>
-                                    <div class="mask rgba-white slight">
+                                <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                                    <div class="mask rgba-white-light">
 
                                     </div>
                                 </a>
@@ -105,9 +117,9 @@
                                 <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
                                 
                                 <hr>
-                                <span class="float-left card-text">{% if product.disccount_price %}
-                                    <del style="color: grey;">C${{ product.price }}</del>
-                                    <strong> C${{ product.disccount_price }}</strong>
+                                <span class="float-left card-text">{% if product.disccount %}
+                                    <del style="color: grey;">C${{ product.original_price}}</del>
+                                    <strong> C${{ product.price }}</strong>
                                 {% else %}
                                    <strong>C${{ product.price }}</strong>
                                 {% endif %}</span>
