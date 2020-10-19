@@ -79,7 +79,11 @@ class Product(models.Model):
         super().save(*args, **kwargs)
         
         
-
+    def get_dis(self):
+        sa = self.dis/100
+        save = sa*self.price
+        return save
+     
     def get_absolute_url(self):
         return '/%s/%s/' % (self.category.slug, self.slug)
 

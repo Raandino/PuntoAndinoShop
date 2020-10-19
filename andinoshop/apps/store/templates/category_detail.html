@@ -28,12 +28,12 @@
                     <label >Marca</label>
                     {% for brand in q %}
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="{{brand.brand}}" name="test" value="{{brand.brand}}">
+                        <input type="checkbox" {% if brand.brand in marca %}checked{% endif %} class="custom-control-input" id="{{brand.brand}}" name="test" value="{{brand.brand}}">
 
                         <label class="custom-control-label" for="{{brand.brand}}" style="cursor: pointer;">{{brand.brand}}</label>
                         </div>
                     {% endfor %}
-                    <label for="">{{marca_vals}}</label>
+
                 </div>
 
                 <div class="form-group">
@@ -42,14 +42,14 @@
                 </div>
                 <div class="form-group">
                     <label for="pricemax">Precio Maximo</label>
-                    <input type="number" min=0 class="form-control" id="pricemax" name="price_max" placeholder="1000?" value="{{pricemax}}">
+                    <input type="number" min=0 class="form-control" id="pricemax" name="price_max" placeholder="10000?" value="{{pricemax}}">
                 </div>
                 
                 <p>Ordenar por:</p>
                 <div class="form-group">
                     <select id="sorting" class="form-control browser-default custom-select" name="sorting" id="">
 
-                            <option value="-date_added"{% if sorting == '-date_added' %} selected{% endif %}>Nuevo-ultimo</option>
+                            <option value="-date_added"{% if sorting == '-date_added' %} selected{% endif %}>Ultimo-primero</option>
                             <option value="price"{% if sorting == 'price'%} selected{% endif %}>Precio bajo-alto</option>
                             <option value="-price"{% if sorting == '-price'%} selected{% endif %}>Precio alto-bajo</option>
                     </select>
@@ -97,6 +97,12 @@
         </div>
         <div class="col">
             <div class="row">
+                {% if products|length == 0 %}
+                    <h5>
+                        No se encontraron resultados
+                    </h5>
+                {% else %}
+
                 {% for product in products %}
                     <div class="col-lg-4 col-md-12 mb-4">
                         <div class="card card-ecommerce">
@@ -138,29 +144,9 @@
                     
                 {% endfor %}
                 
-            
+                    {% endif %}
             </div>
-            <div class="text-center">
-                <ul class="pagination pagination-circle pg-blue">
-                    
-                    <li class="page-item"><a href="?page=1" class="page-link">Inicio</a></li>
-                    {% if products.has_previous %}
-
-                        <li class="page-item"><a href="?page={{ products.previous_page_number }}" class="page-link">Anterior</a></li>
-                    {% endif %}
-
-                    {% for page in products.paginator %}
-                    <li class="page-item" id="paginas"><a href="?page={{ page.number }}" class="page-link">{{ page.number }}</a></li>
-                    {% endfor %}
-
-                    {% if products.has_next %}
-                    <li class="page-item"><a href="?page={{ products.next_page_number }}" class="page-link">Siguiente</a></li>
-                    <li class="page-item"><a href="?page={{ products.paginator.num_pages }}" class="page-link">Ultimo</a></li>
-                    {% endif %}
-
-                </ul>
      
-            </div>
         </div>
     </div>
 </div>

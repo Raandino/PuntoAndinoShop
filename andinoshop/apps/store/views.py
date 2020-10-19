@@ -118,7 +118,7 @@ def category_detail(request, slug):
     
     context = {
         'category': category,
-        'products' : page_obj,
+        'products' : products,
         'q': q,
         'pricemin': pricemin,
         'pricemax': pricemax,

@@ -101,9 +101,9 @@
                         <p class="mb-1 text-center">{{ related_product.name }}</p>
                         <p class="mb-1 text-center">
                             {% if related_product.disccount %}
-                                <small class="mr-1">
+                              
                                     <s style="color: grey;">C${{ related_product.original_price }}</s>
-                                </small>
+                                
                                 <strong>C${{ related_product.price }}</strong>
                                 {% else %}
                                 <strong>C${{ related_product.price }}</strong>
