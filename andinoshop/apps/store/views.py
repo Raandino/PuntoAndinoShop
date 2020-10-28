@@ -1,4 +1,6 @@
 import random
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.utils import timezone
@@ -10,11 +12,14 @@ from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import connection
+from django.views.generic import View
+
 
 # Create your views here.
-
+#BUSQUEDA DE PRODUCTOS DIRECTA
 def search(request):
     query = request.GET.get('query')
     products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query))
@@ -31,7 +36,7 @@ def search(request):
     return render(request, 'search.html', context)
 
 
-
+#DETALLES DEL PRODUCTO EN SI
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
     usuario = Usuario.objects.all()
@@ -58,12 +63,18 @@ def product_detail(request, slug, category_slug):
         'usuario': usuario,
     }
 
+    print(connection.queries)
+
     return render(request, 'product_detail.html', context)
 
+
+#QUERY PARA EL FILTRO
 def is_valid_queryparam(param):
     return param != '' and param is not None
 
 
+
+#PRODUCTOS DE LA CATEGORIA SELECCIONADA
 def category_detail(request, slug):
 
     products = Product.objects.all()
@@ -131,12 +142,13 @@ def category_detail(request, slug):
         'marca_vals': marca_vals,
 
     }
+    print(connection.queries)
 
     return render(request, 'category_detail.html', context)
 
 
 
-
+#MUESTRA LOS PRODUCTOS DESTACADOS
 def featured(request):
     products = Product.objects.filter(is_featured=True)
     p = Paginator(products, 12)
@@ -148,6 +160,8 @@ def featured(request):
 
     return render(request, 'featured_products.html', context)
 
+
+#MUESTRA LAS NOVEDADES
 def new(request):
     products = Product.objects.filter(is_new=True)
     p = Paginator(products, 12)
@@ -159,6 +173,8 @@ def new(request):
 
     return render(request, 'novedades.html', context)
     
+
+#MUESTRA LOS PRODUCTOS EN DESCUENTO
 def discount(request):
     products = Product.objects.filter(disccount=True)
     p = Paginator(products, 16)
@@ -218,7 +234,7 @@ def logoutUser(request):
     logout(request)
     return redirect('frontpage')
 
-
+#MUESTRA EL PERFIL DEL USUARIO
 def profilePage(request):
     usuario = request.user.usuario
     form = CustomerForm(instance = usuario)
@@ -229,10 +245,31 @@ def profilePage(request):
     context = {'form': form}
     return render(request, 'customer.html', context)
 
-@login_required(login_url = 'loginPage')
-def cart(request):
-    return render(request, 'cart.html')
 
+
+#PAGINA DEL CARRITO
+
+class CartView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context = {
+                'object': order
+            }
+            print(connection.queries)
+            return render(self.request, 'cart.html', context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "No tienes productos en el carrito")
+            return redirect("/")
+
+
+
+
+
+
+#FUNCIONALIDAD PARA AÑADIR AL CARRO
 @login_required(login_url = 'loginPage')
 def add_to_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)

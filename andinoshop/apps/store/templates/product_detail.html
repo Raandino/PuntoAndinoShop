@@ -62,7 +62,7 @@
                             <span>
                                 <del style="color: grey;">C${{ product.original_price }}</del>
                             </span>
-                            <span>C${{ product.price }}</span>
+                            <span>C${{ product.price|floatformat:2 }}</span>
                             {% else %}
                             <span>C${{ product.price }}</span>
                             {% endif %}
@@ -159,15 +159,16 @@
                         <form action="" method="POST">
                             {% csrf_token %}
                             <div class="form-group">
-                            <label for="stars">Puntuacion</label>
-                            <select class="browser-default custom-select" name="stars" id="stars">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3" selected>3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                              </select>
-                            </div>
+                            <label for="stars">Puntuacion:</label>
+                            <span id="rateMe">
+                            <input type="radio" name="stars" id="" value="1"><i class="fas fa-star py-2 px-1 rate-popover" data-index="0" data-html="true" data-toggle="popover" data-placement="top" title="1"></i>
+                            <input type="radio" name="stars" id="" value="2"><i class="fas fa-star py-2 px-1 rate-popover" data-index="1" data-html="true" data-toggle="popover" data-placement="top" title="2"></i>
+                            <input type="radio" name="stars" id="" value="3"><i class="fas fa-star py-2 px-1 rate-popover" data-index="2" data-html="true" data-toggle="popover" data-placement="top" title="3"></i>
+                            <input type="radio" name="stars" id="" value="4"><i class="fas fa-star py-2 px-1 rate-popover" data-index="3" data-html="true" data-toggle="popover" data-placement="top" title="4"></i>
+                            <input type="radio" name="stars" id="" value="5"><i class="fas fa-star py-2 px-1 rate-popover" data-index="4" data-html="true" data-toggle="popover" data-placement="top" title="5"></i>
+
+                        </span>
+                        </div>
                               <div class="form-group">
                                 <label for="content">Contenido</label>
                                 <textarea class="form-control" name="content" id="content" rows="7" required></textarea>
@@ -214,6 +215,53 @@
             }
         }
     });
+
+
+
+    var $stars;
+
+jQuery(document).ready(function ($) {
+
+  // Custom whitelist to allow for using HTML tags in popover content
+  var myDefaultWhiteList = $.fn.tooltip.Constructor.Default.whiteList
+  myDefaultWhiteList.button = [];
+
+  $stars = $('.rate-popover');
+  
+  $stars.on('mouseover', function () {
+    var index = $(this).attr('data-index');
+    markStarsAsActive(index);
+  });
+  
+  function markStarsAsActive(index) {
+    unmarkActive();
+    for (var i = 0; i <= index; i++) {
+      $($stars.get(i)).addClass('amber-text');
+    }
+  }
+
+  function unmarkActive() {
+    $stars.removeClass('amber-text');
+  }
+  
+  $stars.on('click', function () {
+    $stars.popover('hide');
+  });
+
+  // Submit, you can add some extra custom code here
+  // ex. to send the information to the server
+  $('#rateMe').on('click', '#voteSubmitButton',  function() {
+    $stars.popover('hide');
+  });
+
+  // Cancel, just close the popover
+  $('#rateMe').on('click', '#closePopoverButton', function() {
+    $stars.popover('hide');
+  });
+
+});
+
+
 
 </script>
 {% endblock %}

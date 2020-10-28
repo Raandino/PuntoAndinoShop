@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     #'allauth',
     #'allauth.account',
     #'allauth.socialaccount',
+    'crispy_forms',
 
     'apps.core',
     'apps.store',
@@ -147,3 +148,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'images/')
 #)
 
 #SITE_ID = 1
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

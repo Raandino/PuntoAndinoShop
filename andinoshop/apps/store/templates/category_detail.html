@@ -118,14 +118,14 @@
                             <div class="card-body">
                                 <h6 class="card-title mb-1">
                                 <strong><a href="{% url 'product_detail' product.category.slug product.slug %}" class="dark-grey-text">{{product.name}}</a></strong> 
-                                </h6>
+                                </h6>                   
 
                                 <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
                                 
                                 <hr>
                                 <span class="float-left card-text">{% if product.disccount %}
                                     <del style="color: grey;">C${{ product.original_price}}</del>
-                                    <strong> C${{ product.price }}</strong>
+                                    <strong> C${{ product.price|floatformat:2 }}</strong>
                                 {% else %}
                                    <strong>C${{ product.price }}</strong>
                                 {% endif %}</span>

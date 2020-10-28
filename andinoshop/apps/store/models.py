@@ -70,7 +70,9 @@ class Product(models.Model):
             self.price = self.original_price
 
         if self.disccount:
-            self.price = int(self.price * (100 - self.dis)/100)
+            div = (100-self.dis)/100
+            self.price = div * self.price
+
         
         else: 
             self.price = self.original_price
@@ -80,8 +82,7 @@ class Product(models.Model):
         
         
     def get_dis(self):
-        sa = self.dis/100
-        save = sa*self.price
+        save = self.original_price-self.price
         return save
      
     def get_absolute_url(self):
@@ -134,6 +135,9 @@ class ProductImage(models.Model):
 
         return thumbnail 
 
+    def __str__(self):
+        return self.product.name
+        
 class ProductReview(models.Model):
     product = models.ForeignKey(Product, related_name = 'reviews', on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'reviews', on_delete = models.CASCADE)
@@ -143,6 +147,9 @@ class ProductReview(models.Model):
 
     date_added = models.DateTimeField(auto_now_add = True)
 
+    def __str__(self):
+        return self.product.name
+    
 
 
 class OrderProduct(models.Model):
@@ -156,13 +163,32 @@ class OrderProduct(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
 
+    def get_total_product_price(self):
+        return self.quantity * self.product.price
+
+    def get_amount_save(self):
+        return self.quantity * self.product.get_dis()
+    
+
 class Order(models.Model):
+    STATUS = (
+        ('Pendiente', 'Pendiente'),
+        ('En Camino', 'En Camino'),
+        ('Entregado', 'Entregado'),
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
     products = models.ManyToManyField(OrderProduct)
     start_date = models.DateTimeField(auto_now_add = True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default = False)
+    status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
 
     def __str__(self):
-        return str(self.ordered_date)
+        return self.user.username
+
+    def get_total(self):
+        total = 0
+        for order_product in self.products.all():
+            total += order_product.get_total_product_price()
+        return total

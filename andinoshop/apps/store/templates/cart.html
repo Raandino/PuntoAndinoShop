@@ -1,1 +1,83 @@
-<h1>ola</h1>
+{% extends 'base.html' %}
+
+{% block title %}Carrito | {% endblock %}
+
+{% block content %}
+
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item active" >Carrito</li>
+        </ol>
+ 
+    </nav>
+</div>
+
+
+<div class="container">
+<div class="table-responsive text-nowrap card p-4">
+    <h2 class="text-center">Carrito de compras</h2>
+    <table class="table">
+      <thead>
+        <tr>   
+          <th class="font-weight-bold text-center"></th>
+          <th class="font-weight-bold" scope="col">Nombre del producto</th>
+          <th class="font-weight-bold" scope="col">Precio</th>
+          <th class="font-weight-bold" scope="col">Cantidad</th>
+          <th class="font-weight-bold" scope="col">Precio Total</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for order_product in object.products.all %}
+          <tr>  
+          <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
+            <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
+              <div class="mask rgba-white-light">
+
+              </div>
+          </a></td>
+          <td> <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}" >{{ order_product.product.name }}</a>
+            <p class="mt-2 grey-text">{{ order_product.product.brand.name }}</p>
+            {% if order_product.product.disccount %}
+                            <span class="badge blue">Descuento</span>
+                            {% endif %}
+          </td>
+          <td>C${{ order_product.product.price }}</td>
+          <td>{{ order_product.quantity }}</td>
+          <td>C${{ order_product.get_total_product_price|floatformat:2}}
+            {% if order_product.product.disccount %}
+            <span class="badge blue ml-2">Ahorro C${{order_product.get_amount_save|floatformat:2}}</span>
+            {% endif %}
+          </td>
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No tienes productos en tu carrito</td>
+          <td >
+            <a href="{% url 'frontpage' %}" class="btn btn-primary float-right">Seguir comprando</a>
+          </td>
+        </tr>
+            {% endfor %}
+            {% if object.get_total %}
+            <tr>
+              <td colspan="4" class="font-weight-bold h6">Precio Total</td>
+              <td class="h6 font-weight-bold">C${{object.get_total|floatformat:2}}</td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                <a href="#" class="btn btn-warning ml-2 float-right">Ir a checkout</a>
+                <a href="{% url 'frontpage' %}" class="btn btn-primary float-right">Seguir comprando</a>
+              </td>
+              
+            </tr>
+            {% endif %}
+      </tbody>
+    </table>
+  
+  </div>
+</div>
+
+{% endblock %}
