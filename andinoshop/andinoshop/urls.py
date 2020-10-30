@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from apps.core.views import frontpage
-from apps.store.views import product_detail,featured, category_detail, search, registerPage, loginPage, logoutUser, profilePage, CartView, add_to_cart, discount, new
+from apps.store.views import product_detail,featured, category_detail, search, registerPage, loginPage, logoutUser, profilePage, CartView, add_to_cart, discount, new, remove_from_cart, remove_quantity_from_cart
 
 
 urlpatterns = [
@@ -35,6 +35,8 @@ urlpatterns = [
     path('cart/', CartView.as_view(), name = 'cart'),
     path('profile/', profilePage, name = 'profilePage'),
     path('add-to-cart/<slug>/', add_to_cart, name = 'add-to-cart'),
+    path('remove-from-cart/<slug>/', remove_from_cart, name = 'remove_from_cart'),
+    path('remove-quantity-cart/<slug>/', remove_quantity_from_cart, name = 'remove_quantity_from_cart'),
     path('<slug:category_slug>/<slug:slug>/', product_detail, name='product_detail'),
     path('<slug:slug>/', category_detail, name='category_detail'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

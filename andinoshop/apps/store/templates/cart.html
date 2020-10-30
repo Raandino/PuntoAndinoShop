@@ -24,8 +24,8 @@
         <tr>   
           <th class="font-weight-bold text-center"></th>
           <th class="font-weight-bold" scope="col">Nombre del producto</th>
-          <th class="font-weight-bold" scope="col">Precio</th>
-          <th class="font-weight-bold" scope="col">Cantidad</th>
+          <th class="font-weight-bold text-center" scope="col">Precio</th>
+          <th class="font-weight-bold text-center" scope="col">Cantidad</th>
           <th class="font-weight-bold" scope="col">Precio Total</th>
         </tr>
       </thead>
@@ -44,12 +44,15 @@
                             <span class="badge blue">Descuento</span>
                             {% endif %}
           </td>
-          <td>C${{ order_product.product.price }}</td>
-          <td>{{ order_product.quantity }}</td>
+          <td>C${{ order_product.product.price|floatformat:2 }}</td>
+          <td class="text-center"><a href="{% url 'remove_quantity_from_cart' order_product.product.slug %}" id="quan"><i class="fas fa-minus mr-2"></i></a>{{ order_product.quantity }} <a href="{% url 'add-to-cart' order_product.product.slug %}" id="quan"><i class="fas fa-plus ml-2"></a></i></td>
           <td>C${{ order_product.get_total_product_price|floatformat:2}}
             {% if order_product.product.disccount %}
             <span class="badge blue ml-2">Ahorro C${{order_product.get_amount_save|floatformat:2}}</span>
             {% endif %}
+            <a href="{% url 'remove_from_cart' order_product.product.slug %}">
+              <i class="fas fa-trash float-right" id="cora" ></i>
+            </a>
           </td>
 
         </tr>

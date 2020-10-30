@@ -37,10 +37,10 @@
                     
                         <hr>
                                 <span class="float-left card-text">{% if product.disccount %}
-                                    <del style="color: grey;">C${{ product.original_price }}</del>
-                                    C${{ product.price }}
+                                    <del style="color: grey;">C${{ product.original_price|floatformat:2 }}</del>
+                                    C${{ product.price|floatformat:2 }}
                                 {% else %}
-                                    C${{ product.price }}
+                                    C${{ product.price|floatformat:2 }}
                                 {% endif %}</span>
 
                                 <span class="float-right">

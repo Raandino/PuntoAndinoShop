@@ -102,6 +102,9 @@
 #ver:hover, #cora:hover{
     color: #CC0000;
 }
+#quan:hover{
+    color: blue;
+}
 
 #rateMe input {
     display:none;

@@ -51,10 +51,10 @@
 
                                     <span class="float-left mt-2">
                                         {% if feat.disccount %}
-                                         <del style="color: grey;">C${{ feat.original_price }}</del>
-                                       <strong> C${{ feat.price }}</strong>
+                                         <del style="color: grey;">C${{ feat.original_price|floatformat:2 }}</del>
+                                       <strong> C${{ feat.price|floatformat:2 }}</strong>
                                         {% else %}
-                                        <strong>C${{ feat.price }}</strong>
+                                        <strong>C${{ feat.price|floatformat:2 }}</strong>
                                         {% endif %}
                                     </span>
                                     
@@ -153,10 +153,10 @@
 
                                 <span class="float-left mt-2">
                                     {% if disc.disccount %}
-                                     <del style="color: grey;">C${{ disc.original_price }}</del>
-                                   <strong> C${{ disc.price }}</strong>
+                                     <del style="color: grey;">C${{ disc.original_price|floatformat:2 }}</del>
+                                   <strong> C${{ disc.price|floatformat:2 }}</strong>
                                     {% else %}
-                                    <strong>C${{ disc.price }}</strong>
+                                    <strong>C${{ disc.price|floatformat:2 }}</strong>
                                     {% endif %}
                                 </span>
                                 

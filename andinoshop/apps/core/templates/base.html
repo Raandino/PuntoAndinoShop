@@ -103,6 +103,16 @@
 
   
       <section class="section">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
           {% block content %}
           {% endblock %}
 
@@ -183,7 +193,7 @@
         <p>
           <i class="fas fa-map-marker-alt mr-3"></i> 62200 Sébaco Viejo, Nicaragua</p>
         <p>
-          <i class="fas fa-envelope mr-3"></i> andinoshop@gmail.com</p>
+          <i class="fas fa-envelope mr-3"></i> <a href="mailto:andinoshop@gmail.com">andinoshop@gmail.com</a> </p>
         <p>
           <i class="fas fa-phone mr-3"></i> 2775-2019</p>
 

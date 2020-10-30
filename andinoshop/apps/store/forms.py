@@ -11,11 +11,11 @@ class CreateUserForm(UserCreationForm):
         fields = ['username', 'email', 'first_name', 'last_name' ,'password1', 'password2']
         password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'password2': forms.PasswordInput(attrs={'class': 'input'}),
+            'username': forms.TextInput(attrs={'class': 'form-control','required': 'true' }),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'required': 'true'} ),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+            'password2': forms.PasswordInput(attrs={'class': 'input', 'required': 'true'}),
         }
 
 class CustomerForm(ModelForm):

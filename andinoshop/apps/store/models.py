@@ -59,8 +59,6 @@ class Product(models.Model):
     thumbnail = models.ImageField(upload_to = 'images/', blank = True, null = True) 
     date_added = models.DateTimeField(auto_now_add = True)
 
-    class Meta:
-        ordering = ('-date_added',)
     def __str__(self):
         return self.name
 
@@ -113,6 +111,11 @@ class Product(models.Model):
             'slug': self.slug
         })
 
+    def get_remove_from_cart(self):
+        return reverse("remove-from-cart", kwargs={
+            'slug': self.slug
+        })
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name = 'images', on_delete = models.CASCADE)
     image = models.ImageField(upload_to = 'static/images/',blank = True, null = True)
@@ -151,25 +154,6 @@ class ProductReview(models.Model):
         return self.product.name
     
 
-
-class OrderProduct(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, null = True)
-    ordered = ordered = models.BooleanField(default = False)
-    product = models.ForeignKey(Product, on_delete = models.CASCADE)
-    quantity = models.IntegerField(default = 1)
-
-
-    def __str__(self):
-        return f"{self.quantity} of {self.product.name}"
-
-    def get_total_product_price(self):
-        return self.quantity * self.product.price
-
-    def get_amount_save(self):
-        return self.quantity * self.product.get_dis()
-    
-
 class Order(models.Model):
     STATUS = (
         ('Pendiente', 'Pendiente'),
@@ -184,6 +168,8 @@ class Order(models.Model):
     ordered = models.BooleanField(default = False)
     status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
 
+
+
     def __str__(self):
         return self.user.username
 
@@ -192,3 +178,24 @@ class Order(models.Model):
         for order_product in self.products.all():
             total += order_product.get_total_product_price()
         return total
+
+
+class OrderProduct(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
+    ordered = ordered = models.BooleanField(default = False)
+    order = models.ForeignKey(Order, on_delete = models.CASCADE)
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    quantity = models.IntegerField(default = 1)
+
+
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name}"
+
+    def get_total_product_price(self):
+        return self.quantity * self.product.price
+
+    def get_amount_save(self):
+        return self.quantity * self.product.get_dis()
+    
+

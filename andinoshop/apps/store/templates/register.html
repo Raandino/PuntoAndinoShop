@@ -13,51 +13,68 @@
  
     </nav>
 </div>
-    <div class="mx-auto my-auto" style="width: 200px;">
-    <form action="" method="POST">
-        {% csrf_token %}
+{% if form.errors %}
         
-        <div class="form-group">
-            <label for="nombre" class="">Nombre</label>
-            <div class="input-group">
-            {{ form.first_name}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ form.errors }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        </div>
-    
-        <div class="form-group">
-            <label class="" for="apellido">Apellido</label>
-            <div class="input-group">  {{ form.last_name }} </div>
-        </div>
-    
-        <div class="form-group">
-            <label class="" for="apellido">Username</label>
-            <div class="input-group"> {{ form.username }} </div>
-        </div>
-    
-        <div class="form-group">
-            <label class="" for="apellido">Email</label>
-            <div class="input-group"> {{ form.email }} </div>
-        </div>
-    
-        <div class="form-group">
-            <label class="" for="apellido">Contraseña</label>
-             {{ form.password1 }} 
-        </div>
-    
-        <div class="form-group">
-            <label class="" for="apellido">Confirmar Contraseña</label>
-            <div class="input-group"> {{ form.password2 }} </div>
-        </div>
-    
-        <div class="text-center">
-        <input type="submit" value="Crear Usuario" class="btn  btn-success">
 
-    </div>
-    </form> 
-    {{ form.errors }}
-    <div>
-        <div>
-            Ya tienes una cuenta?<a href="{% url 'loginPage' %}" class="btn btn-info">Inicia Sesion</a>
+{% endif %}
+<div class="container mt-4" >
+    <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 mx-auto">
+            <form action="" method="POST" class="text-center card p-5">
+                {% csrf_token %}
+                
+                <p class="h4 mb-4 font-weight-bold">Registrarse</p>
+                <hr>
+                <div class="form-row mb-4">
+                    <div class="col">
+                    <label for="nombre" class="">Nombre</label>
+                    {{ form.first_name}} 
+                    </div>
+                    <div class="col">
+                        <label class="" for="apellido">Apellido</label>
+                        {{ form.last_name }} 
+                    </div>
+                </div>
+            
+                
+                    <div class="form-group">
+                        <label class="" for="apellido">Username</label>
+                        {{ form.username }} 
+                    </div>
+    
+                    <div class="form-group mb-4">
+                        <label class="" for="apellido">Email</label>
+                        {{ form.email }} 
+                    </div>
+            
+                    
+                <div class="form-group mb-4">
+                    <label class="" for="apellido">Contraseña</label>
+                    <input type="password" class="form-control" id="{{ form.password1.id_for_label }}" name="{{form.password1.html_name}}" required>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label class="" for="apellido">Confirmar Contraseña</label>
+                    <input type="password" class="form-control" id="{{ form.password2.id_for_label }}" name="{{form.password2.html_name}}" required>
+                </div>
+            
+                
+                <input type="submit" value="Crear Usuario" class="btn  btn-success mb-4">
+                
+                <p>¿Ya tienes una cuenta?
+                    <a href="{% url 'loginPage' %}" class="btn btn-info">Inicia Sesión</a>
+                </p>
+            </form> 
+            
+          
+               
+            
         </div>
     </div>
 </div>
