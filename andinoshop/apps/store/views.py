@@ -40,7 +40,7 @@ def search(request):
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
     usuario = Usuario.objects.all()
-    related_products = list(product.category.products.filter(parent=None).exclude(id=product.id))
+    related_products = list(product.category.products.all().exclude(id=product.id))
     if len(related_products) >= 3:
         related_products = random.sample(related_products, 3)
 
@@ -273,27 +273,24 @@ class CartView(LoginRequiredMixin, View):
 @login_required(login_url = 'loginPage')
 def add_to_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)
-    order_product, created = OrderProduct.objects.get_or_create(
-        product = product,
-        user = request.user,
-        ordered = False
-    )
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
     if order_qs.exists():
         order = order_qs[0]
-        if order.products.filter(product__slug = product.slug).exists():
+        order_productos = OrderProduct.objects.filter(order = order.pk)
+        if order_productos.filter(product__slug = product.slug).exists():
+            order_product = order_productos.get(product__slug = product.slug)
             order_product.quantity += 1
             order_product.save()
             messages.info(request, "La cantidad del producto fue actualizada.")
         else:
-            order.products.add(order_product)
+            order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
             messages.info(request, "El producto fue agregado a su carrito.")
             return redirect('cart')
             
     else:
         ordered_date = timezone.now()
         order = Order.objects.create(user = request.user, ordered_date = ordered_date)
-        order.products.add(order_product)
+        order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
         messages.info(request, "El producto fue agregado a su carrito.")
     return redirect('cart')
 
@@ -302,13 +299,10 @@ def remove_from_cart(request, slug):
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
     if order_qs.exists():
         order = order_qs[0]
-        if order.products.filter(product__slug = product.slug).exists():
-            order_product = OrderProduct.objects.filter(
-                product = product,
-                user = request.user,
-                ordered = False
-            )[0]
-            order.products.remove(order_product)
+        order_productos = OrderProduct.objects.filter(order = order.pk)
+        if order_productos.filter(product__slug = product.slug).exists():
+            order_product = order_productos.get(product__slug = product.slug)
+            order_product.delete()
             messages.info(request, "El producto fue eliminado de tu carrito.")
             return redirect('cart')
 
@@ -320,18 +314,15 @@ def remove_quantity_from_cart(request, slug):
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
     if order_qs.exists():
         order = order_qs[0]
-        if order.products.filter(product__slug = product.slug).exists():
-            order_product = OrderProduct.objects.filter(
-                product = product,
-                user = request.user,
-                ordered = False
-            )[0]
+        order_productos = OrderProduct.objects.filter(order = order.pk)
+        if order_productos.filter(product__slug = product.slug).exists():
+            order_product = order_productos.get(product__slug = product.slug)
             if order_product.quantity > 1:
                 order_product.quantity -= 1
                 order_product.save()
                 messages.info(request, "La cantidad del producto fue actualizada de tu carrito.")
             else:
-                order.products.remove(order_product)
+                order_product.delete()
                 messages.info(request, "El producto fue eliminado de tu carrito.")
 
             return redirect('cart')

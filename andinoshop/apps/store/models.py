@@ -43,7 +43,6 @@ class Product(models.Model):
     name = models.CharField(max_length = 255, null = True)
     slug = models.SlugField(max_length=200)
     category = models.ForeignKey(Category, related_name='products', on_delete = models.CASCADE)
-    parent = models.ForeignKey('self', related_name = 'variants', on_delete = models.CASCADE, blank = True, null = True)
     brand = models.ForeignKey(Brand, null = True, on_delete = models.CASCADE)
     description = models.TextField(blank = True, null = True)
     original_price = models.FloatField(blank=True, null=True)
@@ -162,7 +161,6 @@ class Order(models.Model):
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
-    products = models.ManyToManyField(OrderProduct)
     start_date = models.DateTimeField(auto_now_add = True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default = False)
@@ -184,8 +182,8 @@ class OrderProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
     ordered = ordered = models.BooleanField(default = False)
-    order = models.ForeignKey(Order, on_delete = models.CASCADE)
-    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    order = models.ForeignKey(Order, related_name='products', on_delete = models.CASCADE)
+    product = models.ForeignKey(Product, related_name='products', on_delete = models.DO_NOTHING)
     quantity = models.IntegerField(default = 1)
 
 
