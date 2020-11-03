@@ -30,7 +30,7 @@
         </tr>
       </thead>
       <tbody>
-          {% for order_product in object.products.all %}
+          {% for order_product in object.products.all|dictsort:"id" %}
           <tr>  
           <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
             <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
@@ -43,16 +43,33 @@
             {% if order_product.product.disccount %}
                             <span class="badge blue">Descuento</span>
                             {% endif %}
+            {% if order_product.product.quantity_available < 1 %}
+                    <span class="badge badge-danger">Agotado</span>
+            {% else %}
+                     <span class="badge badge-success">Disponible</span>
+            {% endif %}
           </td>
           <td>C${{ order_product.product.price|floatformat:2 }}</td>
-          <td class="text-center"><a href="{% url 'remove_quantity_from_cart' order_product.product.slug %}" id="quan"><i class="fas fa-minus mr-2"></i></a>{{ order_product.quantity }} <a href="{% url 'add-to-cart' order_product.product.slug %}" id="quan"><i class="fas fa-plus ml-2"></a></i></td>
+          <td class="text-center" style="color:grey;">
+            {% if order_product.product.quantity_available < 1 %}
+            <a href="{% url 'remove_quantity_from_cart' order_product.product.slug %}" class="disabled" style="color: grey;" id="quan"><i class="fas fa-minus mr-2"></i></a>{{ order_product.quantity }} 
+            <a href="{% url 'add-to-cart' order_product.product.slug %}" class="disabled" style="color: grey;" id="quan"><i class="fas fa-plus ml-2"></a></i></td>
+            {% else %}
+            <a href="{% url 'remove_quantity_from_cart' order_product.product.slug %}" id="quan"><i class="fas fa-minus mr-2"></i></a>{{ order_product.quantity }} 
+            <a href="{% url 'add-to-cart' order_product.product.slug %}" id="quan"><i class="fas fa-plus ml-2"></a></i></td>
+            {% endif %}
           <td>C${{ order_product.get_total_product_price|floatformat:2}}
             {% if order_product.product.disccount %}
             <span class="badge blue ml-2">Ahorro C${{order_product.get_amount_save|floatformat:2}}</span>
             {% endif %}
-            <a href="{% url 'remove_from_cart' order_product.product.slug %}">
-              <i class="fas fa-trash float-right" id="cora" ></i>
+            <div class="float-right ">
+            <a href="{% url 'like-products' order_product.product.slug %}">
+              <i class="fas fa-bookmark mr-2" id="cora" title="Guardar para mas tarde"></i>
             </a>
+            <a href="{% url 'remove_from_cart' order_product.product.slug %}">
+              <i class="fas fa-trash " id="cora" title="Eliminar" ></i>
+            </a>
+          </div>
           </td>
 
         </tr>

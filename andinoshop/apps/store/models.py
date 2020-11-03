@@ -51,6 +51,7 @@ class Product(models.Model):
     is_new = models.BooleanField(default = False)
     disccount = models.BooleanField(default = False)
     dis = models.IntegerField(blank=True, default = 0)
+    quantity_available = models.IntegerField(default = 1)
     
 
     
@@ -181,19 +182,31 @@ class Order(models.Model):
 class OrderProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
-    ordered = ordered = models.BooleanField(default = False)
+    ordered =  models.BooleanField(default = False)
     order = models.ForeignKey(Order, related_name='products', on_delete = models.CASCADE)
     product = models.ForeignKey(Product, related_name='products', on_delete = models.DO_NOTHING)
+    price = models.FloatField()
     quantity = models.IntegerField(default = 1)
 
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
 
+    def save(self, *args, **kwargs):
+        self.price = self.quantity * self.product.price
+        super().save(*args, **kwargs)    
+
     def get_total_product_price(self):
         return self.quantity * self.product.price
 
     def get_amount_save(self):
         return self.quantity * self.product.get_dis()
-    
+
+class likedProduct(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
+    product = models.ForeignKey(Product, related_name='productos', on_delete = models.CASCADE)
+
+    def __str__(self):
+        return self.product.name
 

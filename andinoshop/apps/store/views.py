@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand
+from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator, EmptyPage
@@ -280,8 +280,11 @@ def add_to_cart(request, slug):
         if order_productos.filter(product__slug = product.slug).exists():
             order_product = order_productos.get(product__slug = product.slug)
             order_product.quantity += 1
-            order_product.save()
-            messages.info(request, "La cantidad del producto fue actualizada.")
+            if order_product.quantity > order_product.product.quantity_available:
+                messages.info(request, "No esta disponible esa cantidad del producto")
+            else:
+                order_product.save()
+                messages.info(request, "La cantidad del producto fue actualizada.")
         else:
             order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
             messages.info(request, "El producto fue agregado a su carrito.")
@@ -328,3 +331,32 @@ def remove_quantity_from_cart(request, slug):
             return redirect('cart')
 
     return redirect('cart')
+
+
+@login_required(login_url = 'loginPage')
+def likeproducts(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    liked = likedProduct.objects.filter(user = request.user)
+
+    if liked.filter(product =  product).exists():
+        messages.info(request, "Ya tiene agregado este producto en su lista")
+        return redirect('favorites')
+    else:
+        product_like = likedProduct.objects.create(user = request.user, product = product)
+        messages.info(request, "Producto agregado a su lista")
+        return redirect('favorites')
+
+@login_required(login_url = 'loginPage')
+def likedproductsview(request):
+    liked = likedProduct.objects.filter(user = request.user)
+    context =  {
+        'liked': liked,
+    }
+    return render(request,'favorites.html', context )
+
+def remove_from_favorites(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    liked = likedProduct.objects.filter(user = request.user, product = product)
+    liked.delete()
+    messages.info(request, "El producto fue eliminado de tu lista.")
+    return redirect('favorites')

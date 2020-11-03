@@ -72,8 +72,15 @@
                         <p>{{product.description}}</p>
 
                         <form action="" class="d-flex justify-content-left">
+                            {% if product.quantity_available < 1 %}
+                            <button type="button" class="btn btn-danger btn-md my-0 p" disabled>Agotado</button>
+                            {% else %}
                             <a href="{{ product.get_add_to_cart_url }}" class="btn btn-secondary btn-md my-0 p">Añadir al carrito
                                 <i class="fas fa-shopping-cart ml-1"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'like-products' product.slug %}" class="btn btn-info btn-md my-0 p">Añadir a favoritos
+                                <i class="fas fa-heart ml-1"></i>
                             </a>
                         </form>
                     </div>

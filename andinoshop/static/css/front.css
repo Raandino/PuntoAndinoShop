@@ -99,6 +99,9 @@
 #ver{
     color: black;
 }
+#cora{
+    color: black;
+}
 #ver:hover, #cora:hover{
     color: #CC0000;
 }
