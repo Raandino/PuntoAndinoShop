@@ -16,6 +16,7 @@ from django.views.generic import ListView
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.views.generic import View
+from taggit.managers import TaggableManager
 
 
 # Create your views here.
@@ -255,10 +256,14 @@ class CartView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+            pro = OrderProduct.objects.filter(order = order.pk, save_later = False)
+            save = OrderProduct.objects.filter(order = order.pk, save_later = True)
             context = {
-                'object': order
+                'object': order,
+                'pro': pro,
+                'save': save,
+
             }
-            print(connection.queries)
             return render(self.request, 'cart.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "No tienes productos en el carrito")
@@ -279,12 +284,16 @@ def add_to_cart(request, slug):
         order_productos = OrderProduct.objects.filter(order = order.pk)
         if order_productos.filter(product__slug = product.slug).exists():
             order_product = order_productos.get(product__slug = product.slug)
-            order_product.quantity += 1
-            if order_product.quantity > order_product.product.quantity_available:
-                messages.info(request, "No esta disponible esa cantidad del producto")
-            else:
-                order_product.save()
-                messages.info(request, "La cantidad del producto fue actualizada.")
+            if order_product.save_later is True:
+                messages.info(request, "Producto en la lista de guardados para mas tarde.")
+                return redirect('cart')
+            else: 
+                order_product.quantity += 1
+                if order_product.quantity > order_product.product.quantity_available:
+                    messages.info(request, "No esta disponible esa cantidad del producto")
+                else:
+                    order_product.save()
+                    messages.info(request, "La cantidad del producto fue actualizada.")
         else:
             order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
             messages.info(request, "El producto fue agregado a su carrito.")
@@ -339,11 +348,11 @@ def likeproducts(request, slug):
     liked = likedProduct.objects.filter(user = request.user)
 
     if liked.filter(product =  product).exists():
-        messages.info(request, "Ya tiene agregado este producto en su lista")
+        messages.info(request, "Ya tienes agregado este producto en tu lista.")
         return redirect('favorites')
     else:
         product_like = likedProduct.objects.create(user = request.user, product = product)
-        messages.info(request, "Producto agregado a su lista")
+        messages.info(request, "Producto agregado a su lista.")
         return redirect('favorites')
 
 @login_required(login_url = 'loginPage')
@@ -360,3 +369,38 @@ def remove_from_favorites(request, slug):
     liked.delete()
     messages.info(request, "El producto fue eliminado de tu lista.")
     return redirect('favorites')
+
+
+def save_for_later(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    order_qs = Order.objects.filter(user = request.user, ordered = False) 
+    order = order_qs[0]
+    order_productos = OrderProduct.objects.filter(order = order.pk, save_later = False)
+    producto = order_productos.filter(product__slug = product.slug)
+    producto.update(save_later = True, quantity = 0)
+    messages.info(request, "Producto guardado para más tarde.")
+    return redirect('cart')
+
+def move_to_cart(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    order_qs = Order.objects.filter(user = request.user, ordered = False) 
+    order = order_qs[0]
+    order_productos = OrderProduct.objects.filter(order = order.pk, save_later = True)
+    producto = order_productos.filter(product__slug = product.slug)
+    producto.update(save_later = False, quantity = 1)
+    messages.info(request, "Producto movido al carrito.")
+    return redirect('cart')
+
+def compare_similar(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    related_products = product.tags.similar_objects() 
+    if len(related_products) >= 3:
+        related_products = random.sample(related_products, 3)
+
+    context = {
+        'related_products': related_products,
+        'product': product,
+    }
+    return render(request, 'compare.html', context)
+
+    

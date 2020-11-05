@@ -121,6 +121,11 @@
                                 </h6>                   
 
                                 <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                                {% if product.quantity_available < 1 %}
+                                    <span class="badge badge-danger">Agotado</span>
+                                {% else %}
+                                    <span class="badge badge-success">Disponible</span>
+                                {% endif %}
                                 
                                 <hr>
                                 <span class="float-left card-text">{% if product.disccount %}

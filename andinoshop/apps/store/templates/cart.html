@@ -18,7 +18,13 @@
 
 <div class="container">
 <div class="table-responsive text-nowrap card p-4">
-    <h2 class="text-center">Carrito de compras</h2>
+  {% if pro.count == 1 %}
+  <h3 class="">Carrito de compras({{pro.count}} producto)</h3>
+  {% elif pro.count == 0 %}
+  <h3 class="">Carrito de compras</h3>
+  {% else %}
+  <h3 class="">Carrito de compras({{pro.count}} productos)</h3>
+  {% endif %}
     <table class="table">
       <thead>
         <tr>   
@@ -30,7 +36,9 @@
         </tr>
       </thead>
       <tbody>
+          {% if pro|length > 0 %}
           {% for order_product in object.products.all|dictsort:"id" %}
+          {% if order_product.save_later is False %}
           <tr>  
           <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
             <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
@@ -62,9 +70,12 @@
             {% if order_product.product.disccount %}
             <span class="badge blue ml-2">Ahorro C${{order_product.get_amount_save|floatformat:2}}</span>
             {% endif %}
-            <div class="float-right ">
-            <a href="{% url 'like-products' order_product.product.slug %}">
+            <div class="float-right">
+            <a href="{% url 'save-for-later' order_product.product.slug %}">
               <i class="fas fa-bookmark mr-2" id="cora" title="Guardar para mas tarde"></i>
+            </a>
+            <a href="{% url 'compare-similar' order_product.product.slug %}">
+              <i class="fas fa-balance-scale mr-2" id="cora" title="Comparar con productos similares" ></i>
             </a>
             <a href="{% url 'remove_from_cart' order_product.product.slug %}">
               <i class="fas fa-trash " id="cora" title="Eliminar" ></i>
@@ -73,14 +84,19 @@
           </td>
 
         </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5">No tienes productos en tu carrito</td>
-          <td >
-            <a href="{% url 'frontpage' %}" class="btn btn-primary float-right">Seguir comprando</a>
-          </td>
-        </tr>
+        {% endif %}
+
             {% endfor %}
+            {% else %}
+            <tr>
+              <td colspan="5">No tienes productos en tu carrito</td>
+              <td >
+                <a href="{% url 'frontpage' %}" class="btn btn-primary float-right">Seguir comprando</a>
+              </td>
+            </tr>
+            
+
+            {% endif %}
             {% if object.get_total %}
             <tr>
               <td colspan="4" class="font-weight-bold h6">Precio Total</td>
@@ -94,9 +110,76 @@
               
             </tr>
             {% endif %}
+
+      </tbody>
+      <hr>
+    </table>
+    <hr>
+    <h3>Guardados para más tarde</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="font-weight-bold text-center"></th>
+          <th class="font-weight-bold" scope="col">Nombre del producto</th>
+          <th class="font-weight-bold text-center" scope="col">Precio</th>       
+        </tr>
+      </thead>
+      <tbody>
+        
+        {% if save|length > 0 %}
+        {% for order_product in object.products.all|dictsort:"id" %}
+        {% if order_product.save_later is True %}
+          <tr>
+            <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
+              <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
+                <div class="mask rgba-white-light">
+  
+                </div>
+            </a></td>
+            <td> <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}" >{{ order_product.product.name }}</a>
+              <p class="mt-2 grey-text">{{ order_product.product.brand.name }}</p>
+              {% if order_product.product.disccount %}
+                              <span class="badge blue">Descuento</span>
+                              {% endif %}
+              {% if order_product.product.quantity_available < 1 %}
+                      <span class="badge badge-danger">Agotado</span>
+              {% else %}
+                       <span class="badge badge-success">Disponible</span>
+              {% endif %}
+            </td>
+            <td class="text-center">C${{ order_product.product.price|floatformat:2 }}
+              <div class="float-right ">
+                {% if order_product.product.quantity_available < 1 %}
+                <a href="{% url 'add-to-cart' order_product.product.slug %}" class="disabled">
+                    <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>
+                  </a>
+                {% else %}
+                <a href="{% url 'move-to-cart' order_product.product.slug %}">
+                  <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>
+                </a>
+                {% endif %}
+                <a href="{% url 'compare-similar' order_product.product.slug %}">
+                  <i class="fas fa-balance-scale mr-2" id="cora" title="Comparar con productos similares" ></i>
+                </a>
+                <a href="{% url 'remove_from_cart' order_product.product.slug %}">
+                  <i class="fas fa-trash " id="cora" title="Eliminar" ></i>
+                </a>
+            </div>
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="5">No tienes productos en tu lista</td>
+        </tr>
+        {% endif %}
+
+
+
+
       </tbody>
     </table>
-  
   </div>
 </div>
 

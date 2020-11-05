@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     #'allauth.account',
     #'allauth.socialaccount',
     'crispy_forms',
+    'taggit',
 
     'apps.core',
     'apps.store',
@@ -142,11 +143,3 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images/')
 
-#AUTHENTICATION_BACKENDS = (
-#    'django.contrib.auth.backends.ModelBackend',
-#    'allauth.account.auth_backends.AuthenticationBackend'
-#)
-
-#SITE_ID = 1
-
-CRISPY_TEMPLATE_PACK = 'bootstrap4'

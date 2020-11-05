@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %} Producto | {% endblock %}
+{% block content %}
+
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cart' %}" style="color: black;">Carrito</a></li>
+            <li class="breadcrumb-item active" >Productos relacionados</li>
+        </ol>
+ 
+    </nav>
+</div>       
+
+<div class="container my-5 card p-4">
+    <section>
+        <h3 class="font-weight-bold dark-grey-text text-center mb-5">
+            Comparar con productos similares
+        </h3>
+        <hr>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="">
+                    <div class="view overlay">
+                        <img src="{{product.thumbnail.url}}" alt="" class="img-fluid mx-auto d-block" style=>
+                        <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                            <div class="mask rgba-white-light"></div>
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><strong><a href="{% url 'product_detail' product.category.slug product.slug %}" class="dark-grey-text">{{product.name}}</a></strong></h6>
+                        <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                    
+                        <hr>
+                                <p class=" card-text">{% if product.disccount %}
+                                    <del style="color: grey;">C${{ product.original_price|floatformat:2 }}</del>
+                                    C${{ product.price|floatformat:2 }}
+                                {% else %}
+                                    C${{ product.price|floatformat:2 }}
+                                {% endif %}</p>
+
+                             
+                       
+                   
+                    </div>
+                    <div class="text-center">
+                    <p class="card-text">En tu carrito</p></div>
+
+
+                </div>
+
+            </div>
+            {% for productos in related_products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="">
+                    <div class="view overlay">
+                        <img src="{{productos.thumbnail.url}}" alt="" class="img-fluid mx-auto d-block" style=>
+                        <a href="{% url 'product_detail' productos.category.slug productos.slug %}">
+                            <div class="mask rgba-white-light"></div>
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="card-title mb-1"><strong><a href="{% url 'product_detail' productos.category.slug productos.slug %}" class="dark-grey-text">{{productos.name}}</a></strong></h6>
+                        <p class="card-text">Puntuación: {% if productos.get_rating == 0 %}No hay reviews{% else %} {{ productos.get_rating|floatformat:1 }} {% endif %}</p>
+                        {% if productos.quantity_available < 1 %}
+                            <span class="badge badge-danger">Agotado</span>
+                        {% else %}
+                            <span class="badge badge-success">Disponible</span>
+                        {% endif %}
+                        <hr>
+                                <span class="card-text">{% if productos.disccount %}
+                                    <del style="color: grey;">C${{ productos.original_price|floatformat:2 }}</del>
+                                    C${{ productos.price|floatformat:2 }}
+                                {% else %}
+                                    C${{ productos.price|floatformat:2 }}
+                                {% endif %}</span>
+
+                   
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'add-to-cart' productos.slug %}" class="btn btn-primary btn-md my-0 p">Añadir al carrito
+                            <i class="fas fa-shopping-cart ml-1"></i>
+                        </a></div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+</div>
+
+
+{% endblock %}

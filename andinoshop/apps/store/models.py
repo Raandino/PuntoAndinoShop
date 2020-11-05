@@ -5,6 +5,7 @@ from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 from PIL import Image
+from taggit.managers import TaggableManager
 # Create your models here.
 
 class Usuario(models.Model):
@@ -52,7 +53,7 @@ class Product(models.Model):
     disccount = models.BooleanField(default = False)
     dis = models.IntegerField(blank=True, default = 0)
     quantity_available = models.IntegerField(default = 1)
-    
+    tags = TaggableManager()
 
     
     image = models.ImageField(upload_to = 'images/',blank = True, null = True)
@@ -187,6 +188,7 @@ class OrderProduct(models.Model):
     product = models.ForeignKey(Product, related_name='products', on_delete = models.DO_NOTHING)
     price = models.FloatField()
     quantity = models.IntegerField(default = 1)
+    save_later = models.BooleanField(default = False)
 
 
     def __str__(self):
