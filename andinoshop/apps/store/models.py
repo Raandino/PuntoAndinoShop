@@ -178,13 +178,19 @@ class Order(models.Model):
         for order_product in self.products.all():
             total += order_product.get_total_product_price()
         return total
+    def total_envio(self):
+        total = 0
+        for order_product in self.products.all():
+            total += order_product.get_total_product_price()
+        if total > 0:
+            return total+30
 
 
 class OrderProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
     ordered =  models.BooleanField(default = False)
-    order = models.ForeignKey(Order, related_name='products', on_delete = models.CASCADE)
+    order = models.ForeignKey(Order, related_name='products', on_delete = models.CASCADE, null = True)
     product = models.ForeignKey(Product, related_name='products', on_delete = models.DO_NOTHING)
     price = models.FloatField()
     quantity = models.IntegerField(default = 1)

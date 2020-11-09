@@ -42,6 +42,7 @@ urlpatterns = [
     path('save-for-later/<slug>/', save_for_later, name = 'save-for-later'),
     path('move-to-cart/<slug>/', move_to_cart, name = 'move-to-cart'),
     path('comparación/<slug>/', compare_similar, name = 'compare-similar'),
+    path('remove-from-later/<slug>/', remove_from_later, name='remove-from-later'),
     path('<slug:category_slug>/<slug:slug>/', product_detail, name='product_detail'),
     path('favorites/', likedproductsview, name = 'favorites'),
     path('<slug:slug>/', category_detail, name='category_detail'),

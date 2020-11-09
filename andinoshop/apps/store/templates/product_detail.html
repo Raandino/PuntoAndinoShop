@@ -109,11 +109,11 @@
                         <p class="mb-1 text-center">
                             {% if related_product.disccount %}
                               
-                                    <s style="color: grey;">C${{ related_product.original_price }}</s>
+                                    <s style="color: grey;">C${{ related_product.original_price|floatformat:2 }}</s>
                                 
-                                <strong>C${{ related_product.price }}</strong>
+                                <strong>C${{ related_product.price|floatformat:2 }}</strong>
                                 {% else %}
-                                <strong>C${{ related_product.price }}</strong>
+                                <strong>C${{ related_product.price|floatformat:2 }}</strong>
                                 {% endif %}
                         </p>
 

@@ -99,8 +99,16 @@
             {% endif %}
             {% if object.get_total %}
             <tr>
+              <td colspan="4" class="h6">Subtotal</td>
+              <td class="h6 ">C${{object.get_total|floatformat:2}}</td>
+            </tr>
+            <tr>
+              <td colspan="4" class="h6">Envio</td>
+              <td class="h6 ">C$30</td>
+            </tr>
+            <tr>
               <td colspan="4" class="font-weight-bold h6">Precio Total</td>
-              <td class="h6 font-weight-bold">C${{object.get_total|floatformat:2}}</td>
+              <td class="h6 font-weight-bold">C${{object.total_envio|floatformat:2}}</td>
             </tr>
             <tr>
               <td colspan="5">
@@ -127,7 +135,7 @@
       <tbody>
         
         {% if save|length > 0 %}
-        {% for order_product in object.products.all|dictsort:"id" %}
+        {% for order_product in later %}
         {% if order_product.save_later is True %}
           <tr>
             <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
@@ -161,7 +169,7 @@
                 <a href="{% url 'compare-similar' order_product.product.slug %}">
                   <i class="fas fa-balance-scale mr-2" id="cora" title="Comparar con productos similares" ></i>
                 </a>
-                <a href="{% url 'remove_from_cart' order_product.product.slug %}">
+                <a href="{% url 'remove-from-later' order_product.product.slug %}">
                   <i class="fas fa-trash " id="cora" title="Eliminar" ></i>
                 </a>
             </div>

@@ -84,9 +84,14 @@
                    
                     </div>
                     <div class="text-center">
+                        {% if productos.quantity_available < 1 %}
+                        <a class="btn btn-danger btn-md my-0 p disabled">Agotado</a>
+                        {% else %}
                         <a href="{% url 'add-to-cart' productos.slug %}" class="btn btn-primary btn-md my-0 p">Añadir al carrito
                             <i class="fas fa-shopping-cart ml-1"></i>
-                        </a></div>
+                        </a>
+                        {% endif %}
+                    </div>
 
                 </div>
             </div>

@@ -257,11 +257,13 @@ class CartView(LoginRequiredMixin, View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             pro = OrderProduct.objects.filter(order = order.pk, save_later = False)
-            save = OrderProduct.objects.filter(order = order.pk, save_later = True)
+            save = OrderProduct.objects.filter(user = self.request.user, save_later = True)
+            later = OrderProduct.objects.filter(user = self.request.user, save_later = True)
             context = {
                 'object': order,
                 'pro': pro,
                 'save': save,
+                'later': later,
 
             }
             return render(self.request, 'cart.html', context)
@@ -282,22 +284,23 @@ def add_to_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         order_productos = OrderProduct.objects.filter(order = order.pk)
-        if order_productos.filter(product__slug = product.slug).exists():
-            order_product = order_productos.get(product__slug = product.slug)
-            if order_product.save_later is True:
-                messages.info(request, "Producto en la lista de guardados para mas tarde.")
-                return redirect('cart')
-            else: 
+        pro = OrderProduct.objects.filter(user = request.user, save_later = True)
+        if pro.filter(product__slug = product.slug).exists():
+            messages.info(request, "Producto en la lista de guardados para más tarde.")
+            return redirect('cart')
+        else:
+            if order_productos.filter(product__slug = product.slug).exists():
+                order_product = order_productos.get(product__slug = product.slug)
                 order_product.quantity += 1
                 if order_product.quantity > order_product.product.quantity_available:
                     messages.info(request, "No esta disponible esa cantidad del producto")
                 else:
                     order_product.save()
                     messages.info(request, "La cantidad del producto fue actualizada.")
-        else:
-            order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
-            messages.info(request, "El producto fue agregado a su carrito.")
-            return redirect('cart')
+            else:
+                order_product = OrderProduct.objects.create(product=product, user=request.user, ordered=False, order = order )
+                messages.info(request, "El producto fue agregado a su carrito.")
+                return redirect('cart')
             
     else:
         ordered_date = timezone.now()
@@ -309,14 +312,11 @@ def add_to_cart(request, slug):
 def remove_from_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
-    if order_qs.exists():
-        order = order_qs[0]
-        order_productos = OrderProduct.objects.filter(order = order.pk)
-        if order_productos.filter(product__slug = product.slug).exists():
-            order_product = order_productos.get(product__slug = product.slug)
-            order_product.delete()
-            messages.info(request, "El producto fue eliminado de tu carrito.")
-            return redirect('cart')
+    order = order_qs[0]
+    order_productos = OrderProduct.objects.filter(order = order.pk)
+    order_product = order_productos.get(product__slug = product.slug)
+    order_product.delete()
+    messages.info(request, "El producto fue eliminado de tu carrito.")
 
     return redirect('cart')
 
@@ -324,35 +324,31 @@ def remove_from_cart(request, slug):
 def remove_quantity_from_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
-    if order_qs.exists():
-        order = order_qs[0]
-        order_productos = OrderProduct.objects.filter(order = order.pk)
-        if order_productos.filter(product__slug = product.slug).exists():
-            order_product = order_productos.get(product__slug = product.slug)
-            if order_product.quantity > 1:
-                order_product.quantity -= 1
-                order_product.save()
-                messages.info(request, "La cantidad del producto fue actualizada de tu carrito.")
-            else:
-                order_product.delete()
-                messages.info(request, "El producto fue eliminado de tu carrito.")
-
-            return redirect('cart')
+    order = order_qs[0]
+    order_productos = OrderProduct.objects.filter(order = order.pk)
+    order_product = order_productos.get(product__slug = product.slug)
+    if order_product.quantity > 1:
+        order_product.quantity -= 1
+        order_product.save()
+        messages.info(request, "La cantidad del producto fue actualizada de tu carrito.")
+    else:
+        order_product.delete()
+        messages.info(request, "El producto fue eliminado de tu carrito.")
 
     return redirect('cart')
+
 
 
 @login_required(login_url = 'loginPage')
 def likeproducts(request, slug):
     product = get_object_or_404(Product, slug = slug)
     liked = likedProduct.objects.filter(user = request.user)
-
     if liked.filter(product =  product).exists():
         messages.info(request, "Ya tienes agregado este producto en tu lista.")
         return redirect('favorites')
     else:
         product_like = likedProduct.objects.create(user = request.user, product = product)
-        messages.info(request, "Producto agregado a su lista.")
+        messages.info(request, "Producto agregado a su lista de favoritos.")
         return redirect('favorites')
 
 @login_required(login_url = 'loginPage')
@@ -377,17 +373,25 @@ def save_for_later(request, slug):
     order = order_qs[0]
     order_productos = OrderProduct.objects.filter(order = order.pk, save_later = False)
     producto = order_productos.filter(product__slug = product.slug)
-    producto.update(save_later = True, quantity = 0)
+    producto.update(save_later = True, quantity = 0, order = None)
     messages.info(request, "Producto guardado para más tarde.")
     return redirect('cart')
+
+def remove_from_later(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    order_product = OrderProduct.objects.get(user = request.user, product__slug = product.slug, save_later = True)
+    order_product.delete()
+    messages.info(request, "Producto eliminado de su lista de guardados para más tarde.")
+    return redirect('cart')
+
 
 def move_to_cart(request, slug):
     product = get_object_or_404(Product, slug = slug)
     order_qs = Order.objects.filter(user = request.user, ordered = False) 
     order = order_qs[0]
-    order_productos = OrderProduct.objects.filter(order = order.pk, save_later = True)
+    order_productos = OrderProduct.objects.filter(user = request.user, save_later = True)
     producto = order_productos.filter(product__slug = product.slug)
-    producto.update(save_later = False, quantity = 1)
+    producto.update(save_later = False, quantity = 1, order = order.pk)
     messages.info(request, "Producto movido al carrito.")
     return redirect('cart')
 

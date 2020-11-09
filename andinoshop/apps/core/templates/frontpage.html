@@ -175,38 +175,65 @@
         </div>
     </section>
 
+     
     <section class="mt-5">
-        <!-- Card -->
-<div class="card card-cascade wider reverse ">
+        <h3 class="font-weight-bold dark-grey-tet text-center ">
+            Productos recien llegados
+        </h3>
+        <h6 class="text-center mb-5">
+            <a href="{% url 'new' %}">Ver todos</a>
+        </h6>
 
-    <!-- Card image -->
-    <div class="view view-cascade overlay">
-      <img class="card-img-top"  class= "sss"src="{% static "halloween.jpeg" %}"
-        alt="Card image cap">
-      <a href="{% url 'new' %}">
-        <div class="mask rgba-white-light"></div>
-      </a>
-    </div>
-  
-    <!-- Card content -->
-    <div class="card-body card-body-cascade text-center">
-  
-      <!-- Title -->
-      <h4 class="card-title"><strong>Novedades</strong></h4>
-      <!-- Subtitle -->
+        <div class="row">
+            {% for disc in new %}
+                <div class="col-md-4 mb-2">
+                    <div class="card card-ecommerce">
+                        <div class=" view overlay">
+                            <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
+                            <a href="{% url 'product_detail' disc.category.slug disc.slug %}">
+                                <div class="mask rgba-white-light"></div>
+                            </a>
+                        </div>
 
-      <!-- Text -->
-      <p class="card-text">Todo lo que necesitas para celebrar Halloween con los nuevos productos
-      </p>
-  
-      <a href="{% url 'new' %}" class="btn btn-light-blue btn-md">Ver más</a>
-  
-    </div>
-  
-  </div>
-  <!-- Card -->
+                        <div class="card-body card-body-cascade text-center pb-3">
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'product_detail' disc.category.slug disc.slug %}" style="color: black;">
+                                <strong>
+                                    {{disc.name}}
+                                </strong>
+                            </a>
+                            </h5>
+                            <h6 class="card-text">Puntuación: {% if disc.get_rating == 0 %}No hay reviews{% else %} {{ disc.get_rating|floatformat:1 }} {% endif %}</h6>
+                        </div>
+                        <div class="card-footer px-2">
+
+                                <span class="float-left mt-2">
+                                    {% if disc.disccount %}
+                                     <del style="color: grey;">C${{ disc.original_price|floatformat:2 }}</del>
+                                   <strong> C${{ disc.price|floatformat:2 }}</strong>
+                                    {% else %}
+                                    <strong>C${{ disc.price|floatformat:2 }}</strong>
+                                    {% endif %}
+                                </span>
+                                
+                                <span class="float-right mb-2 mt-2">
+                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' disc.category.slug disc.slug %}">
+                                        <i class="fas fa-eye ml-3"></i>
+                                      </a>
+                                      <a href="{% url 'like-products' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                        <i class="fas fa-heart ml-3"></i>
+                                      </a>
+                                </span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </section>
-    </div>
+
+
+
+</div>
 
   
 {% endblock %}

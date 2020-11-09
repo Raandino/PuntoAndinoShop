@@ -163,20 +163,20 @@
         <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
         {% if request.user.is_authenticated %}
         <p>
-          <a href="#!">Perfil</a>
+          <a href="{% url 'profilePage' %}">Perfil</a>
         </p>
         <p>
-          <a href="#!">Cerrar Sesion</a>
+          <a href="{% url 'logout' %}">Cerrar Sesion</a>
         </p>
         <p>
-          <a href="#!">Lista de Favoritos</a>
+          <a href="{% url 'favorites' %}">Lista de Favoritos</a>
         </p>
         {% else %}
         <p>
-          <a href="#!">Registrarse</a>
+          <a href="{% url 'registerPage' %}">Registrarse</a>
         </p>
         <p>
-          <a href="#!">Iniciar Sesion</a>
+          <a href="{% url 'loginPage' %}">Iniciar Sesion</a>
         </p>
         {% endif %}
 
