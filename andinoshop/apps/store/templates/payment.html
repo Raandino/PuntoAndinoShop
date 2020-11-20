@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Checkout | {% endblock %}
+{% block content %}
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cart' %}" style="color: black;">Carrito</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shipping' %}" style="color: black;">Seleccionar Dirección</a></li>
+            <li class="breadcrumb-item active" >Metodo de pago</li>
+
+        </ol>
+ 
+   
+    </nav>
+
+</div>
+<style type="text/css">
+#stripeBtn {
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  text-decoration: none;
+  color: #fff;
+  background: #32325d;
+  white-space: nowrap;
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-decoration: none;
+  -webkit-transition: all 150ms ease;
+  transition: all 150ms ease;
+  float: left;
+  width: 100%
+}
+
+#stripeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, .10), 0 3px 6px rgba(0, 0, 0, .08);
+  background-color: #43458b;
+}
+.StripeElement {
+  box-sizing: border-box;
+
+  height: 40px;
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: white;
+
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+ 
+  
+</style>
+
+<div class="container wow fadeIn">
+    <h2 class="my-5 h2 text-center font-weight-bold">Introducir pago</h2>
+
+    <div class="row">
+      <div class="col-md-7 mb-4">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Tu carrito</span>
+            <span class="badge badge-secondary badge-pill">{{order.products.count}}</span>
+          </h4>
+
+          <!-- Cart -->
+          <ul class="list-group mb-3 z-depth-1">
+            {% for order_product in order.products.all %}
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0"> {{order_product.quantity}} x {{order_product.product.name}}</h6>
+                <small class="text-muted">{{order_product.product.description}}</small>
+              </div>
+              <span class="text-muted">C${{order_product.get_total_product_price|floatformat:2}}</span>
+            </li>
+            {% endfor %}
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0 text-muted">Envio</h6>
+              
+              </div>
+              <span class="text-muted">C$30</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0">Total(NIO)</h6>
+              
+              </div>
+              <span class="font-weight-bold">C${{order.total_envio|floatformat:2}}</span>
+            </li>
+
+          </ul>
+          <!-- Cart -->
+
+          <!-- Promo code -->
+          <form class="card p-2">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-secondary btn-md waves-effect m-0" type="button">Redeem</button>
+              </div>
+            </div>
+          </form>
+    </div>
+        <div class="col-md-5 mb-4">
+        
+          <form action="." method="post" id="payment-form" class="card p-4">
+            {% csrf_token %}
+            <div class="form-row">
+              <label for="card-element">
+                Tarjeta de Credito o de Debito
+              </label>
+              <div id="card-element" class="mb-4">
+                <!-- A Stripe Element will be inserted here. -->
+                
+              </div>
+          
+              <!-- Used to display form errors. -->
+              <div id="card-errors" role="alert"></div>
+            </div>
+          
+            <button id="stripeBtn">Submit Payment</button>
+          </form>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>  // Create a Stripe client.
+  var stripe = Stripe('pk_test_51HpNstHKhVhWsHEkKA1mc2KS2acuJHS8PVt0l0bPqlVfBq4Zxzpxlg7k8kA4Oz0aksCA1XkET9ksqo0bt9KoiCsy00qBm8HMvo');
+
+  // Create an instance of Elements.
+  var elements = stripe.elements();
+
+  // Custom styling can be passed to options when creating an Element.
+  // (Note that this demo uses a wider set of styles than the guide below.)
+  var style = {
+    base: {
+      color: '#32325d',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: '#aab7c4'
+      }
+    },
+    invalid: {
+      color: '#fa755a',
+      iconColor: '#fa755a'
+    }
+  };
+
+  // Create an instance of the card Element.
+  var card = elements.create('card', {style: style});
+
+  // Add an instance of the card Element into the `card-element` <div>.
+  card.mount('#card-element');
+
+  // Handle real-time validation errors from the card Element.
+  card.on('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
+  // Handle form submission.
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    stripe.createToken(card).then(function(result) {
+      if (result.error) {
+        // Inform the user if there was an error.
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        // Send the token to your server.
+        stripeTokenHandler(result.token);
+      }
+    });
+  });
+
+  // Submit the form with the token ID.
+  function stripeTokenHandler(token) {
+    // Insert the token ID into the form so it gets submitted to the server
+    var form = document.getElementById('payment-form');
+    var hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    form.appendChild(hiddenInput);
+
+    // Submit the form
+    form.submit();
+  }
+</script>
+
+
+{% endblock %}

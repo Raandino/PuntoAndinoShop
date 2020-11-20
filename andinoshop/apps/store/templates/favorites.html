@@ -15,67 +15,66 @@
 
 
 <div class="container">
-    <div class="table-responsive text-nowrap card p-4">
-        <h2 class="text-center">Lista de Favoritos</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="font-weight-bold"></th>
-                    <th class="font-weight-bold">Nombre del Producto</th>
-                    <th class="font-weight-bold">Precio</th>
-                </tr>
-            </thead>
 
-            <tbody>
-                {% for liked in liked %}
-                    <tr>
-                        <td class="view overlay"><img src="{{liked.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
-                            <a href="{% url 'product_detail' liked.product.category.slug liked.product.slug %}">
-                              <div class="mask rgba-white-light">
-                
-                              </div>
-                          </a></td>
+  
+    {% if lista|length < 1 %}
+      <div class="row mt-4">
 
-                          <td> <a href="{% url 'product_detail' liked.product.category.slug liked.product.slug %}" >{{ liked.product.name }}</a>
-                            <p class="mt-2 grey-text">{{ liked.product.brand.name }}</p>
-                            {% if liked.product.disccount %}
-                                            <span class="badge blue">Descuento</span>
-                                            {% endif %}
-                            {% if liked.product.quantity_available < 1 %}
-                                    <span class="badge badge-danger">Agotado</span>
-                            {% else %}
-                                    <span class="badge badge-success">Disponible</span>
-                            {% endif %}
-                          </td>
+        <div class="col-md-4">
+          <div class="card">
+            <a href="#" class="waves-light">
+              <div class="card-body text-center">
+                <i class="fas fa-plus  fa-3x"></i>
+              </div>
+            </a>
+          </div>
+        </div>
 
-                          <td>C${{ liked.product.price|floatformat:2 }}
-                            <div class="float-right ">
-                                {% if liked.product.quantity_available < 1 %}
-                                <a href="{% url 'add-to-cart' liked.product.slug %}" class="disabled">
-                                    <i class="fas fa-shopping-cart mr-2" id="cora" title="Añadir al carrito"></i>
-                                  </a>
-                                {% else %}
-                                <a href="{% url 'add-to-cart' liked.product.slug %}">
-                                  <i class="fas fa-shopping-cart mr-2" id="cora" title="Añadir al carrito"></i>
-                                </a>
-                                {% endif %}
-                                <a href="{% url 'remove-from-list' liked.product.slug %}">
-                                  <i class="fas fa-trash " id="cora" title="Eliminar" ></i>
-                                </a>
-                            </div>
-                          </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5">No tienes productos en tu lista</td>
-                        <td >
-                          <a href="{% url 'frontpage' %}" class="btn btn-primary float-right">Seguir comprando</a>
-                        </td>
-                      </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      </div>
+
+    {% else %}
+    <div class="row">
+      {% for lista in lista %}
+        <div class="col-md-4 mt-4">
+          <div class="card">
+            <a href="#" class="waves-light">
+              <div class="card-body text-center">
+                <h3>{{lista.name}}</h3>
+              </div>
+            </a>
+
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-md-6 border-right text-center font-weight-bold">
+                  d
+                </div>
+                <div class="col-md-6 border-left text-center font-weight-bold">
+                  36K
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+      <div class="col-md-4 mt-4">
+        <div class="card">
+          <a href="#" class="waves-light">
+            <div class="card-body text-center">
+              <i class="fas fa-plus  fa-3x"></i>
+            </div>
+          </a>
+        </div>
+      </div>
+
     </div>
+    
+
+
+    {% endif %}
+  
+    
+    
 </div>
 
 

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Monedas | {% endblock %}
+{% block content %}
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item active" >Mis monedas</li>
+
+        </ol>
+ 
+    </nav>
+</div>
+
+
+
+<div class="container mt-4">
+    <div class="float-right">
+        <span class="badge red z-depth-1 mr-1"> {{coins}} </span>
+        <i class="fas fa-coins"></i>
+        <span>Mis monedas</span>
+    </div>
+    <br>
+    <span class=" h5">Canjea cupones de descuento!</span> <button style="border: none; background: none;"  data-toggle="modal" data-target="#centralModalSm"><i class="fas fa-question-circle"></i></button> 
+
+    <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+
+            <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title w-100" id="myModalLabel">Monedas</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Consigue monedas realizando compras, canjealas por cupones, y podras utilizarlos en tu siguiente compra!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-4 mb-2">
+            <div class="card">
+                <h6 class="card-title mb-1 mt-4 text-center">
+                    <i class="fas fa-coins" style="font-size: 25px;"></i>
+                    <span style="font-size: 25px;">50</span>
+                </h6> 
+                <div class="view overlay">
+                    <img src="{% static "coupon.png" %}"" class="img-fluid mx-auto d-block" width="150px" alt="">
+                    
+                        <div class="mask rgba-white-light"></div>
+                </div>
+
+                <div class="card-body text-center">
+                    <h5 class="card-title ">10% de descuento</h5>
+                    
+                    <a href="#" class="btn btn-success">Canjear</a>
+                    
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-2">
+            <div class="card">
+                <h6 class="card-title mb-1 mt-4 text-center">
+                    <i class="fas fa-coins" style="font-size: 25px;"></i>
+                    <span style="font-size: 25px;">120</span>
+                </h6> 
+                <div class="view overlay">
+                    <img src="{% static "coupon.png" %}"" class="img-fluid mx-auto d-block" width="150px" alt="">
+                    
+                        <div class="mask rgba-white-light"></div>
+                </div>
+
+                <div class="card-body text-center">
+                    <h5 class="card-title ">22% de descuento</h5>
+                    
+                    <a href="#" class="btn btn-success">Canjear</a>
+                    
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-2">
+            <div class="card">
+                <h6 class="card-title mb-1 mt-4 text-center">
+                    <i class="fas fa-coins" style="font-size: 25px;"></i>
+                    <span style="font-size: 25px;">250</span>
+                </h6> 
+                <div class="view overlay">
+                    <img src="{% static "coupon.png" %}"" class="img-fluid mx-auto d-block" width="150px" alt="">
+                    
+                        <div class="mask rgba-white-light"></div>
+                </div>
+
+                <div class="card-body text-center">
+                    <h5 class="card-title ">30% de descuento</h5>
+                    
+                    <a href="#" class="btn btn-success">Canjear</a>
+                    
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -23,3 +23,15 @@ class CustomerForm(ModelForm):
         model = Usuario
         fields = '__all__'
         exclude = ['user']
+
+class AddressForm(ModelForm):
+    class Meta:
+        model = Address
+        fields = ['full_name', 'address_1', 'address_2', 'city', 'phone']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control','required': 'true' }),
+            'address_1': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'} ),
+            'address_2': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        }

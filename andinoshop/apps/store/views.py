@@ -1,4 +1,5 @@
-import random
+import random, datetime
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
@@ -6,8 +7,8 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import CreateUserForm, CustomerForm
-from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct
+from .forms import CreateUserForm, CustomerForm, AddressForm
+from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator, EmptyPage
@@ -17,6 +18,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.views.generic import View
 from taggit.managers import TaggableManager
+
+import stripe
+stripe.api_key = "sk_test_51HpNstHKhVhWsHEkwcl8cL6uizY5xfJR2KMx5F25ddUlKvFAID87RzJ1mZfHgxmz0FbUAm09eHm29PqJyOdMroZv00oBQOhCVz"
+
+# `source` is obtained with Stripe.js; see https://stripe.com/docs/payments/accept-a-payment-charges#web-create-token
 
 
 # Create your views here.
@@ -354,8 +360,10 @@ def likeproducts(request, slug):
 @login_required(login_url = 'loginPage')
 def likedproductsview(request):
     liked = likedProduct.objects.filter(user = request.user)
+    lista = Listaliked.objects.filter(user = request.user)
     context =  {
         'liked': liked,
+        'lista': lista,
     }
     return render(request,'favorites.html', context )
 
@@ -408,3 +416,152 @@ def compare_similar(request, slug):
     return render(request, 'compare.html', context)
 
     
+
+@login_required(login_url = 'loginPage')
+def address_view(request):
+    address = Address.objects.filter(user = request.user)
+    context = {
+        'address': address,
+    }
+    return render(request,'address.html', context)
+@login_required(login_url = 'loginPage')
+def address_create(request):
+    if request.method == 'POST':
+        fullname = request.POST.get('full_name')
+        address_1 = request.POST.get('address_1')
+        address_2 = request.POST.get('address_2')
+        city = request.POST.get('city')
+        phone = request.POST.get('phone')
+
+        address = Address.objects.create(user = request.user, full_name = fullname, address_1 = address_1, address_2 = address_2, city = city, phone = phone)
+        messages.info(request, "Direccion añadida")
+        return redirect('address-view')
+    return render(request, 'create_address.html')
+
+
+@login_required(login_url = 'loginPage')
+def update_address(request, pk):
+    address = Address.objects.get(id = pk)
+    form = AddressForm(instance = address)
+
+    if request.method == 'POST':
+        form = AddressForm(request.POST, instance = address)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Dirección actualizada")
+            return redirect('address-view')
+    context = {
+        'form': form,
+    }
+    return render(request,'update_address.html', context)
+
+@login_required(login_url = 'loginPage')
+def select_shipping(request):
+    address = Address.objects.filter(user = request.user)
+    if request.method == 'POST':
+        fullname = request.POST.get('full_name')
+        address_1 = request.POST.get('address_1')
+        address_2 = request.POST.get('address_2')
+        city = request.POST.get('city')
+        phone = request.POST.get('phone')
+
+        address = Address.objects.create(user = request.user, full_name = fullname, address_1 = address_1, address_2 = address_2, city = city, phone = phone)
+        messages.info(request, "Direccion añadida")
+        return redirect('shipping')
+    context = {
+        'address' : address
+    }
+    return render(request, 'select_address.html', context)
+
+def shipping(request, pk):
+    address = Address.objects.get(id = pk)
+    order = Order.objects.get(user=request.user, ordered=False)
+    order.shipping_address = address
+    order.save()
+    return redirect('payment')
+
+def payment_view(request):
+    order = Order.objects.get(user = request.user, ordered = False)
+
+    if request.method == 'POST':
+        order = Order.objects.get(user = request.user, ordered = False)
+        token = request.POST.get('stripeToken')
+        amount = int(order.total_envio() * 100)
+
+        try:
+            charge = stripe.Charge.create(
+                amount = amount,
+                currency="nio",
+                source= token,
+            )
+            
+                    #Creando el pago para tener un registro
+            payment = Payment()
+            payment.stripe_charge_id = charge['id']
+            payment.user = request.user
+            payment.amount = order.total_envio()
+            payment.save()
+
+            #Asignando el pago a la orden
+            order_products = order.products.all()
+            order_products.update(ordered=True)
+            for product in order_products:
+                product.save()
+
+
+            order.ordered = True
+            order.payment = payment
+            order.ordered_date = timezone.now()
+            order.save()
+
+            messages.success(request, "Tu orden se ha realizado correctamente!")
+            return redirect("/")
+        except stripe.error.CardError as e:
+            # Since it's a decline, stripe.error.CardError will be caught
+            body = e.json_body
+            err = body.get('error', {})
+            messages.warning(request, f"{err.get('message')}")
+            return redirect("/")
+        except stripe.error.RateLimitError as e:
+            # Too many requests made to the API too quickly
+            messages.warning(request, "Demasiadas peticiones enviadas")
+            return redirect("/")
+        except stripe.error.InvalidRequestError as e:
+            # Invalid parameters were supplied to Stripe's API
+            messages.warning(request, "Parametros incorrectos")
+            return redirect("/")
+        except stripe.error.AuthenticationError as e:
+            # Authentication with Stripe's API failed
+            # (maybe you changed API keys recently)
+            messages.warning(request, "Fallo en la autenticación")
+            return redirect("/")
+        except stripe.error.APIConnectionError as e:
+            # Network communication with Stripe failed
+            messages.warning(request, "Error en la conexión")
+            return redirect("/")
+        except stripe.error.StripeError as e:
+            # Display a very generic error to the user, and maybe send
+            # yourself an email
+            messages.warning(request, "Algo salio mal, no fue cobrado, intente nuevamente!")
+            return redirect("payment")
+        except Exception as e:
+            # send email to ourselves
+            messages.warning(request, "Error")
+            return redirect("/")
+    context = {
+        'order': order,
+    }
+    return render(request, 'payment.html', context)
+
+
+
+    
+
+
+def coins_view(request):
+    usuario = request.user.usuario
+    coins = usuario.coins
+    context = {
+        'coins': coins,
+    }
+    return render(request, 'coins.html', context)

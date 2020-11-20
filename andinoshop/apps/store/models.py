@@ -15,9 +15,23 @@ class Usuario(models.Model):
     email = models.CharField(max_length=200, null = True)
     profile_pic = models.ImageField(default = "usuario.png",null = True, blank = True)
     date_created = models.DateTimeField(auto_now_add = True)
+    coins = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.name
+
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
+    full_name = models.CharField(max_length=300)
+    address_1 = models.CharField(max_length=350)
+    address_2 = models.CharField(max_length=350, null = True)
+    city = models.CharField(max_length=100)
+    phone = models.CharField(max_length=8)
+
+    def __str__(self):
+        return self.address_1
+    
 
 class Category(models.Model):
     parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, blank = True, null = True)
@@ -155,6 +169,18 @@ class ProductReview(models.Model):
         return self.product.name
     
 
+
+class Payment(models.Model):
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, null = True, blank = True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return self.user.username
+
+
 class Order(models.Model):
     STATUS = (
         ('Pendiente', 'Pendiente'),
@@ -167,7 +193,8 @@ class Order(models.Model):
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default = False)
     status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
-
+    shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, blank = True, null = True)
+    payment = models.ForeignKey(Payment, related_name='payment', on_delete=models.SET_NULL, blank = True, null = True)
 
 
     def __str__(self):
@@ -210,11 +237,22 @@ class OrderProduct(models.Model):
     def get_amount_save(self):
         return self.quantity * self.product.get_dis()
 
+
+class Listaliked(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, null = True)
+    name = models.CharField(max_length = 255)
+
+    def __str__(self):
+        return self.name
+
+
 class likedProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
     product = models.ForeignKey(Product, related_name='productos', on_delete = models.CASCADE)
+    lista = models.ForeignKey(Listaliked, related_name='lista', on_delete = models.CASCADE)
 
     def __str__(self):
-        return self.product.name
+        return f"{self.product.name} in {self.lista.name} from {self.lista.user}"
 
