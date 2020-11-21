@@ -511,11 +511,12 @@ def payment_view(request):
 
             order.ordered = True
             order.payment = payment
+            order.total = order.total_envio()
             order.ordered_date = timezone.now()
             order.save()
 
             messages.success(request, "Tu orden se ha realizado correctamente!")
-            return redirect("/")
+            return redirect("orders")
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
@@ -555,8 +556,6 @@ def payment_view(request):
 
 
 
-    
-
 
 def coins_view(request):
     usuario = request.user.usuario
@@ -565,3 +564,59 @@ def coins_view(request):
         'coins': coins,
     }
     return render(request, 'coins.html', context)
+
+def is_valid_queryparam(param):
+    return param != '' and param is not None
+
+def orders_client(request):
+    order = Order.objects.filter(user = request.user, ordered = True)
+    order_product = OrderProduct.objects.filter(order = order)
+    status = request.GET.get('status')
+    sorting = request.GET.get('sorting')
+
+    if is_valid_queryparam(sorting) and sorting != 'Escoge...':
+        order = order.order_by(sorting)
+    
+    if status:
+        order = order.filter(status__in = request.GET.getlist('status'))
+
+    context = {
+        'order': order,
+        'order_product': order_product,
+        'sorting': sorting,
+        'status': status,
+    }
+    return render(request, 'orders.html', context )
+
+def order_detail(request, pk):
+    order = Order.objects.get(user = request.user, id = pk)
+    context = {
+        'order': order,
+    }
+    return render(request, 'order_detail.html', context)
+
+def change_address(request, pk):
+    order = Order.objects.get(user = request.user, id = pk)
+    address = Address.objects.filter(user = request.user)
+    if request.method == 'POST':
+        fullname = request.POST.get('full_name')
+        address_1 = request.POST.get('address_1')
+        address_2 = request.POST.get('address_2')
+        city = request.POST.get('city')
+        phone = request.POST.get('phone')
+
+        address = Address.objects.create(user = request.user, full_name = fullname, address_1 = address_1, address_2 = address_2, city = city, phone = phone)
+        messages.info(request, "Direccion añadida")
+        return redirect('change-address', order.id)
+    context = {
+        'order': order,
+        'address': address,
+    }
+    return render(request, 'change_address.html', context)
+
+def change_address_confirm(request, pk, order_pk):
+    address = Address.objects.get(id = pk)
+    order = Order.objects.get(user=request.user, id = order_pk)
+    order.shipping_address = address
+    order.save()
+    return redirect('order-detail', order.id)

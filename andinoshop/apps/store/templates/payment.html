@@ -9,7 +9,7 @@
             <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
             <li class="breadcrumb-item"><a href="{% url 'cart' %}" style="color: black;">Carrito</a></li>
             <li class="breadcrumb-item"><a href="{% url 'shipping' %}" style="color: black;">Seleccionar Dirección</a></li>
-            <li class="breadcrumb-item active" >Metodo de pago</li>
+            <li class="breadcrumb-item active" >Realizar pago</li>
 
         </ol>
  
@@ -120,9 +120,9 @@
           <!-- Promo code -->
           <form class="card p-2">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username" aria-describedby="basic-addon2">
+              <input type="text" class="form-control" placeholder="Cupon de descuento" aria-label="Recipient's username" aria-describedby="basic-addon2">
               <div class="input-group-append">
-                <button class="btn btn-secondary btn-md waves-effect m-0" type="button">Redeem</button>
+                <button class="btn btn-secondary btn-md waves-effect m-0" type="button">Usar</button>
               </div>
             </div>
           </form>
@@ -144,7 +144,7 @@
               <div id="card-errors" role="alert"></div>
             </div>
           
-            <button id="stripeBtn">Submit Payment</button>
+            <button id="stripeBtn">Confirmar Pago</button>
           </form>
         </div>
         

@@ -195,7 +195,7 @@ class Order(models.Model):
     status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
     shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, blank = True, null = True)
     payment = models.ForeignKey(Payment, related_name='payment', on_delete=models.SET_NULL, blank = True, null = True)
-
+    total = models.FloatField(null = True, blank = True)
 
     def __str__(self):
         return self.user.username

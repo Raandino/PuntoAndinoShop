@@ -94,6 +94,7 @@
         {% if request.user.is_authenticated %}
         <a class="dropdown-item" href="{% url 'profilePage' %}">Perfil</a>
         <a class="dropdown-item" href="{% url 'address-view' %}">Direcciones</a>
+        <a class="dropdown-item" href="{% url 'orders' %}">Ordenes</a>
         <a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesion</a>
         {% else %}
         <a class="dropdown-item" href="{% url 'registerPage' %}">Registrarse</a>

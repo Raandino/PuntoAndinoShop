@@ -99,15 +99,18 @@
             {% endif %}
             {% if object.get_total %}
             <tr>
-              <td colspan="4" class="h6">Subtotal</td>
+              <td colspan="3"></td>
+              <td class="h6">Subtotal</td>
               <td class="h6 ">C${{object.get_total|floatformat:2}}</td>
             </tr>
-            <tr>
-              <td colspan="4" class="h6">Envio</td>
+            <tr class="table-borderless">
+              <td colspan="3"></td>
+              <td class="h6">Envio</td>
               <td class="h6 ">C$30</td>
             </tr>
             <tr>
-              <td colspan="4" class="font-weight-bold h6">Precio Total</td>
+              <td colspan="3"></td>
+              <td  class="font-weight-bold h6">Precio Total</td>
               <td class="h6 font-weight-bold">C${{object.total_envio|floatformat:2}}</td>
             </tr>
             <tr>

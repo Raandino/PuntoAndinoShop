@@ -7,8 +7,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb" style="background-color: white;">
             <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'cart' %}" style="color: black;">Carrito</a></li>
-            <li class="breadcrumb-item active" >Seleccionar Dirección</li>
+            <li class="breadcrumb-item"><a href="{% url 'orders' %}" style="color: black;">Mis Ordenes</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order-detail' order.id %}" style="color: black;">Orden #00{{order.id}}</a></li>
+            <li class="breadcrumb-item active" >Cambiar dirección</li>
 
         </ol>
  
@@ -71,7 +72,7 @@
                             <p class="card-text">Telefono: {{address.phone}}</p>
             
                             <hr>
-                            <a href="{% url 'selected-address' address.pk %}" class="btn btn-primary btn-sm text-center">Escoger</a>
+                            <a href="{% url 'change-confirm' address.pk order.pk %}" class="btn btn-primary btn-sm text-center">Escoger</a>
                         </div>
                         
                     </div>
