@@ -11,6 +11,7 @@ from .forms import CreateUserForm, CustomerForm, AddressForm
 from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
+from django.template.loader import get_template
 from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
 from django.views.generic import ListView
@@ -18,6 +19,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.views.generic import View
 from taggit.managers import TaggableManager
+from io import BytesIO
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+
 
 import stripe
 stripe.api_key = "sk_test_51HpNstHKhVhWsHEkwcl8cL6uizY5xfJR2KMx5F25ddUlKvFAID87RzJ1mZfHgxmz0FbUAm09eHm29PqJyOdMroZv00oBQOhCVz"
@@ -620,3 +625,34 @@ def change_address_confirm(request, pk, order_pk):
     order.shipping_address = address
     order.save()
     return redirect('order-detail', order.id)
+
+def render_to_pdf(template_src, context_dict = {}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+
+    if not pdf.err:
+        return result.getvalue()
+    
+    return None
+
+def invoice_download(request, pk):
+    order = Order.objects.get(user = request.user , id = pk)
+    pdf = render_to_pdf('order_pdf.html', {'order': order})
+
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        content = "attachment; filename=Factura #%s.pdf" %  pk
+        response['Content-Disposition'] = content
+
+        return response
+    
+    return HttpResponse("No se encontro")
+
+def test(request, pk):
+    order = Order.objects.get(user = request.user , id = pk)
+    context = {
+        'order': order,
+    }
+    return render (request, 'order_pdf.html', context)

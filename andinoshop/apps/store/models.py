@@ -251,7 +251,7 @@ class likedProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)
     product = models.ForeignKey(Product, related_name='productos', on_delete = models.CASCADE)
-    lista = models.ForeignKey(Listaliked, related_name='lista', on_delete = models.CASCADE)
+    lista = models.ForeignKey(Listaliked, related_name='productos', on_delete = models.CASCADE)
 
     def __str__(self):
         return f"{self.product.name} in {self.lista.name} from {self.lista.user}"

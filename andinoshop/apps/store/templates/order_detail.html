@@ -21,7 +21,7 @@
     <div class="card p-4">
         <p class="card-title h3 ">Orden #00{{order.id}}, {{order.ordered_date|date:'M d, Y'}}, {{order.ordered_date|time}}</p>
         <div>
-        <span> <a href="#">Descargar Factura</a></span>
+        <span> <a href="{% url 'download' order.id %}">Descargar Factura</a></span>
         <span class="card-text text-right float-right">Estado: <span class="font-weight-bold">{{order.status}}</span></span>
         </div>
         <hr>
@@ -84,12 +84,16 @@
                       <td><a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}" >{{ order_product.product.name }}</a>
                         <p class="mt-2 grey-text">{{ order_product.product.brand.name }}</p>  
                     </td>
-                    <td>C${{ order_product.product.price|floatformat:2 }}</td>
-                    <td class="text-center">{{order_product.quantity}}</td>
-                    <td>C${{ order_product.get_total_product_price|floatformat:2}}
+                    <td>
                         {% if order_product.product.disccount %}
-                        <span class="badge blue ml-2">Ahorro C${{order_product.get_amount_save|floatformat:2}}</span>
-                        {% endif %}</td>
+                        <del style="color: grey;">C${{ order_product.product.original_price|floatformat:2 }}</del> 
+                        C${{ order_product.product.price|floatformat:2 }}
+                        {% else %}
+                        C${{ order_product.product.price|floatformat:2 }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{order_product.quantity}}</td>
+                    <td>C${{ order_product.get_total_product_price|floatformat:2}}</td>
                     </tr>
                     {% endfor %}
 
