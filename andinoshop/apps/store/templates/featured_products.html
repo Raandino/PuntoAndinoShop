@@ -47,7 +47,7 @@
                                     <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' product.category.slug product.slug %}">
                                         <i class="fas fa-eye ml-3"></i>
                                       </a>
-                                      <a class="material-tooltip-main" id="cora" data-toggle="tooltip" href="{% url 'like-products' product.slug %}" data-placement="top" title="Añadir a Favoritos">
+                                      <a class="material-tooltip-main" id="cora" data-toggle="tooltip" href="{% url 'add-favorite' product.slug %}" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>
                                 </span>

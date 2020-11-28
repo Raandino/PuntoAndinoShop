@@ -79,6 +79,7 @@
         <span class="clearfix d-none d-sm-inline-block"> Carrito </span>
       </a>
     </li>
+    {% if request.user.is_authenticated %}
     <li class="nav-item">
       <a class="nav-link waves-effect" href="{% url 'coins' %}">
         <span class="badge red z-depth-1 mr-1"> {{ request.user|coins_count }} </span>
@@ -86,6 +87,7 @@
         <span class="clearfix d-none d-sm-inline-block"> Monedas </span>
       </a>
     </li>
+    {% endif %}
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">
@@ -128,7 +130,7 @@
       </section>
 
     <!-- Footer -->
-<footer class="page-footer font-small elegant-color">
+<footer class="page-footer font-small elegant-color ">
 
   
 

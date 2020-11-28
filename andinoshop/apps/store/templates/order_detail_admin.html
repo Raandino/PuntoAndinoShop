@@ -1,0 +1,126 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Orden #00{{order.id}}</h1>
+
+  </div>
+
+
+    <div class="card p-4">
+        <p class="card-title h3 ">Orden #00{{order.id}}, {{order.ordered_date|date:'M d, Y'}}, {{order.ordered_date|time}}</p>
+        <div>
+        <span> <a href="{% url 'download' order.id %}">Descargar Factura</a></span>
+        <span class="card-text text-right float-right">Estado: <span class="font-weight-bold">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form.status}}
+                <button type="submit" class="btn btn-success btn-sm">Confirmar</button>
+            </form>
+            
+        </span></span>
+        </div>
+        <hr>
+        <div class="card-body">
+            <h3 class="mb-4">Factura #{{order.id}}</h3>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4">Dirección de envio</h4>
+                    <div class="">
+                        <p class="font-weight-bold card-text" style="color: black">{{order.shipping_address.full_name}}</p>
+                        <p class="card-text">{{order.shipping_address.address_1}}</p>
+                        <p class="card-text">{{order.shipping_address.city}}</p>
+                        <p class="card-text">Telefono: {{order.shipping_address.phone}}</p>
+                        <hr>
+                    </div>
+
+                </div>
+                <div class="col-md-4 mb-4">
+                    
+
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4">Punto Andino Shop</h4>
+                    <div class="">
+                        <p class="font-weight-bold card-text" style="color: black">62200 Sébaco Viejo, Nicaragua</p>
+                        <p class="card-text">andinoshop@gmail.com</p>
+                        <p class="card-text">Telefono: 2775-2019</p>
+                        
+                    </div>
+
+                </div>
+                
+            </div>
+
+            <div class="table-responsive text-nowrap ">
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="font-weight-bold"></th>
+                      <th scope="col" class="font-weight-bold">Nombre del producto</th>
+                      <th scope="col" class="font-weight-bold">Precio</th>
+                      <th scope="col" class="font-weight-bold text-center">Cantidad</th>
+                      <th scope="col" class="font-weight-bold">Precio Total</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for order_product in order.products.all %}
+                    <tr>
+                        <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
+                            <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
+                              <div class="mask rgba-white-light">
+                
+                              </div>
+                          </a></td>
+                      <td><a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}" >{{ order_product.product.name }}</a>
+                        <p class="mt-2 grey-text">{{ order_product.product.brand.name }}</p>  
+                    </td>
+                    <td>
+                        {% if order_product.product.disccount %}
+                        <del style="color: grey;">C${{ order_product.product.original_price|floatformat:2 }}</del> 
+                        C${{ order_product.product.price|floatformat:2 }}
+                        {% else %}
+                        C${{ order_product.product.price|floatformat:2 }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{order_product.quantity}}</td>
+                    <td>C${{ order_product.get_total_product_price|floatformat:2}}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="">
+                        <td colspan="3"></td>
+                        <td  class="h6">Subtotal</td>
+                        <td class="h6 ">C${{order.get_total|floatformat:2}}</td>
+                    </tr>
+                    {% if order.coupon %}
+                    <tr class="table-borderless">
+                        <td colspan="3"></td>
+                        <td  class="h6">Cupon de Descuento
+                            <p class="mt-2 grey-text" style="font-size: 12px;">{{ order.coupon.code }} (%{{order.coupon.porcentage}})</p>
+                        </td>
+                        <td class="h6 ">C${{order.get_coupon_save|floatformat:2}}</td>
+                    </tr>
+                    {% endif %}
+                    <tr class="table-borderless">
+                        <td colspan="3"></td>
+                        <td  class="h6">Envio</td>
+                        <td class="h6 ">C$30</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td  class="h6 font-weight-bold">Total</td>
+                        <td class="h6 font-weight-bold">C${{order.total|floatformat:2}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

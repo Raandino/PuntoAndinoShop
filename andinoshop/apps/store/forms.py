@@ -21,8 +21,13 @@ class CreateUserForm(UserCreationForm):
 class CustomerForm(ModelForm):
     class Meta:
         model = Usuario
-        fields = '__all__'
-        exclude = ['user']
+        fields = ['name', 'phone', 'email', 'profile_pic']
+        widgets = {
+            'name': forms.TextInput(attrs = {'class': 'form-control'}),
+            'phone': forms.TextInput(attrs = {'class': 'form-control'}),
+            'email': forms.TextInput(attrs = {'class': 'form-control'}),
+            'profile_pic': forms.FileInput(attrs = {'class': 'custom-file-input'}),
+        }
 
 class AddressForm(ModelForm):
     class Meta:
@@ -34,4 +39,36 @@ class AddressForm(ModelForm):
             'address_2': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        }
+
+class CouponForm(ModelForm):
+    class Meta:
+        model = Coupon
+        fields = ['code']
+        widgets = {
+            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cupon de Descuento'})
+        }
+
+class OrderForm(ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+        widgets = {
+            'status': forms.Select(attrs = {'class': 'form-control'})
+        }
+
+class ProductForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'slug', 'category', 'brand', 'description', 'original_price', 'disccount', 'dis', 'tags', 'image', 'quantity_available']
+        widgets = {
+            'name': forms.TextInput(attrs = {'class': 'form-control'}),
+            'slug': forms.TextInput(attrs = {'class': 'form-control'}),
+            'category': forms.Select(attrs = {'class': 'form-control'}),
+            'brand': forms.Select(attrs = {'class': 'form-control'}),
+            'description': forms.Textarea(attrs = {'class': 'form-control'}),
+            'original_price': forms.TextInput(attrs = {'class': 'form-control'}),
+            'dis': forms.NumberInput(attrs = {'class': 'form-control'}),
+            'tags': forms.TextInput(attrs = {'class': 'form-control'}),
+            'quantity_available': forms.NumberInput(attrs = {'class': 'form-control'}),
         }

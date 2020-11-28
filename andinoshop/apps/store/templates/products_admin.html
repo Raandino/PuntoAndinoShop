@@ -1,0 +1,73 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Productos</h1>
+    <a href="{% url 'create-product' %}" class="btn btn-primary">Agregar Producto</a>
+</div>
+<div class="row">
+    <div class="col-12 col-sm-3">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">Filtro</h4>
+
+        <form action="{% url 'admin-products' %}" method="GET">
+
+            
+            <p>Ordenar por:</p>
+            <div class="form-group">
+                <input type="text" placeholder="Nombre del Producto" class="form-control" id="product" name="product" >
+            </div>
+            <div class="form-group">
+                <select id="sorting" class="form-control browser-default custom-select" name="categorias" id="categorias">
+                        <option value="">Escoger Categoria...</option>
+                        {% for category in categories%}
+                        <option value="{{category.id}}">{{category.title}}</option>
+                        {% endfor %}
+                </select>
+            </div>
+
+        
+            
+
+            <button class="btn btn-primary" type="submit">Filtrar</button>
+            
+
+        </form>
+
+
+    </div>
+
+    <div class="col">
+        {% if products|length == 0 %}
+            <h5>No se encontraron productos</h5>
+        {% else %}
+        <div class="table-responsive text-nowrap table-hover">
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col" class="font-weight-bold">Nombre del Producto</th>
+                  <th scope="col" class="font-weight-bold">Categoria</th>
+                  <th scope="col" class="font-weight-bold">Precio</th>
+                  <th scope="col" class="font-weight-bold text-center">En inventario</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                  {% for products in products %}
+                <tr>
+                  <td scope="row"><a href="#" style="color: #386eaf" id="ordenid">{{products.name}}</a></td>
+                  <td>{{products.category.title}}</td>
+                  <td>C${{products.price|floatformat:2}}</td>
+                  <td class="text-center">{{products.quantity_available}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          
+          </div>
+          {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

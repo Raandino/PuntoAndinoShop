@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Monedas | {% endblock %}
+{% block content %}
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'coins' %}" style="color: black;">Mis monedas</a></li>
+            <li class="breadcrumb-item active" >Cupon Canjeado</li>
+
+        </ol>
+ 
+    </nav>
+</div>
+
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-md-4 mb-2"></div>
+        <div class="col-md-4 mb-2">
+            <div class="card">
+                <h6 class="card-title mb-1 mt-4 text-center">
+                    <i class="fas fa-coins" style="font-size: 25px;"></i>
+                    <span style="font-size: 25px;">50</span>
+                </h6> 
+                <div class="view overlay">
+                    <img src="{% static "coupon.png" %}"" class="img-fluid mx-auto d-block" width="150px" alt="">
+                    
+                        <div class="mask rgba-white-light"></div>
+                </div>
+
+                <div class="card-body text-center">
+                    <h5 class="card-title ">{{codigo.code}}</h5>
+                    
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-2"></div>
+    </div>
+</div>
+
+{% endblock %}

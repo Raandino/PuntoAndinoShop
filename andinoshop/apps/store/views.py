@@ -1,14 +1,15 @@
 import random, datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from apps.store.decorators import allowed_users, admin_only
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import CreateUserForm, CustomerForm, AddressForm
-from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment
+from .forms import CreateUserForm, CustomerForm, AddressForm, CouponForm, OrderForm, ProductForm
+from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment, Coupon
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 from django.template.loader import get_template
@@ -254,6 +255,7 @@ def profilePage(request):
         form = CustomerForm(request.POST, request.FILES, instance = usuario)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Información actualizada')
     context = {'form': form}
     return render(request, 'customer.html', context)
 
@@ -350,34 +352,6 @@ def remove_quantity_from_cart(request, slug):
 
 
 
-@login_required(login_url = 'loginPage')
-def likeproducts(request, slug):
-    product = get_object_or_404(Product, slug = slug)
-    liked = likedProduct.objects.filter(user = request.user)
-    if liked.filter(product =  product).exists():
-        messages.info(request, "Ya tienes agregado este producto en tu lista.")
-        return redirect('favorites')
-    else:
-        product_like = likedProduct.objects.create(user = request.user, product = product)
-        messages.info(request, "Producto agregado a su lista de favoritos.")
-        return redirect('favorites')
-
-@login_required(login_url = 'loginPage')
-def likedproductsview(request):
-    liked = likedProduct.objects.filter(user = request.user)
-    lista = Listaliked.objects.filter(user = request.user)
-    context =  {
-        'liked': liked,
-        'lista': lista,
-    }
-    return render(request,'favorites.html', context )
-
-def remove_from_favorites(request, slug):
-    product = get_object_or_404(Product, slug = slug)
-    liked = likedProduct.objects.filter(user = request.user, product = product)
-    liked.delete()
-    messages.info(request, "El producto fue eliminado de tu lista.")
-    return redirect('favorites')
 
 
 def save_for_later(request, slug):
@@ -460,6 +434,12 @@ def update_address(request, pk):
     }
     return render(request,'update_address.html', context)
 
+def delete_address(request, pk):
+    address = Address.objects.get(user = request.user, id = pk)
+    address.delete()
+    messages.success(request, 'Dirección eliminada satisfactoriamente')
+    return redirect('address-view')
+
 @login_required(login_url = 'loginPage')
 def select_shipping(request):
     address = Address.objects.filter(user = request.user)
@@ -487,7 +467,6 @@ def shipping(request, pk):
 
 def payment_view(request):
     order = Order.objects.get(user = request.user, ordered = False)
-
     if request.method == 'POST':
         order = Order.objects.get(user = request.user, ordered = False)
         token = request.POST.get('stripeToken')
@@ -512,6 +491,14 @@ def payment_view(request):
             order_products.update(ordered=True)
             for product in order_products:
                 product.save()
+
+            if len(order_products) > 3:
+                coins = 10
+                usuario = request.user.usuario
+                coins_user = usuario.coins
+                total = coins + coins_user
+                usuario.coins = total
+                usuario.save()
 
 
             order.ordered = True
@@ -556,6 +543,7 @@ def payment_view(request):
             return redirect("/")
     context = {
         'order': order,
+        'couponform': CouponForm,
     }
     return render(request, 'payment.html', context)
 
@@ -617,6 +605,7 @@ def change_address(request, pk):
         'order': order,
         'address': address,
     }
+
     return render(request, 'change_address.html', context)
 
 def change_address_confirm(request, pk, order_pk):
@@ -624,13 +613,14 @@ def change_address_confirm(request, pk, order_pk):
     order = Order.objects.get(user=request.user, id = order_pk)
     order.shipping_address = address
     order.save()
+    messages.info(request, "Dirección cambiada")
     return redirect('order-detail', order.id)
 
 def render_to_pdf(template_src, context_dict = {}):
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
 
     if not pdf.err:
         return result.getvalue()
@@ -638,7 +628,7 @@ def render_to_pdf(template_src, context_dict = {}):
     return None
 
 def invoice_download(request, pk):
-    order = Order.objects.get(user = request.user , id = pk)
+    order = Order.objects.get( id = pk)
     pdf = render_to_pdf('order_pdf.html', {'order': order})
 
     if pdf:
@@ -656,3 +646,237 @@ def test(request, pk):
         'order': order,
     }
     return render (request, 'order_pdf.html', context)
+
+
+def get_coupon(request, code):
+    try: 
+        coupon = Coupon.objects.get(code = code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.info(request, "Este cupon no existe")
+        return redirect('payment')
+
+def add_coupon(request):
+    if request.method == 'POST':
+        form = CouponForm(request.POST or None)
+        if form.is_valid():
+            code = form.cleaned_data.get('code')
+            order = Order.objects.get(user = request.user, ordered = False) 
+            coupon = get_coupon(request, code)
+            order.coupon = coupon
+            order.save()
+            messages.success(request, "Cupon agregado")
+            return redirect('payment')
+    return None
+
+def buy_coupon(request, number):
+    coupon = Coupon.objects.get(porcentage = number)
+    if coupon.porcentage == 10:
+        usuario = request.user.usuario
+        if usuario.coins >= 50:
+            usuario.coins -= 50
+            usuario.save()
+            context = {
+                'codigo': coupon,
+            }
+            messages.success(request, 'Cupon canjeado exitosamente!')
+            return render(request, 'coupon-charge.html', context)
+        else:
+            messages.warning(request, "No tienes monedas suficientes")
+            return redirect('coins')
+    elif coupon.porcentage == 22:
+        usuario = request.user.usuario
+        if usuario.coins >= 120:
+            usuario.coins -= 120
+            usuario.save()
+            context = {
+                'codigo': coupon,
+            }
+            messages.success(request, 'Cupon canjeado exitosamente!')
+            return render(request, 'coupon-charge.html', context)
+        else:
+            messages.warning(request, "No tienes monedas suficientes")
+            return redirect('coins')
+    elif coupon.porcentage == 30:
+        usuario = request.user.usuario
+        if usuario.coins >= 250:
+            usuario.coins -= 250
+            usuario.save()
+            context = {
+                'codigo': coupon,
+            }
+            messages.success(request, 'Cupon canjeado exitosamente!')
+            return render(request, 'coupon-charge.html', context)
+        else:
+            messages.warning(request, "No tienes monedas suficientes")
+            return redirect('coins')
+
+
+def orders_admin(request):
+    order = Order.objects.filter( ordered = True)
+    order_product = OrderProduct.objects.filter(order = order)
+    status = request.GET.get('status')
+    sorting = request.GET.get('sorting')
+    user = request.GET.get('user')
+    date_min = request.GET.get('from')
+    date_max = request.GET.get('to')
+    
+    if is_valid_queryparam(user):
+        order = order.filter(user__usuario__name__icontains=user)
+
+    if is_valid_queryparam(sorting) and sorting != 'Escoge...':
+        order = order.order_by(sorting)
+    
+    if status:
+        order = order.filter(status__in = request.GET.getlist('status'))
+
+    if is_valid_queryparam(date_min):
+        order = order.filter(ordered_date__gte = date_min)
+
+    if is_valid_queryparam(date_max):
+        order = order.filter(ordered_date__lt = date_max)
+
+    context = {
+        'order': order,
+        'order_product': order_product,
+        'sorting': sorting,
+        'status': status,
+        'user': user,
+    }
+    return render(request, 'order_admin.html', context)
+
+def order_detail_admin(request, pk):
+    order = Order.objects.get(id = pk)
+    form = OrderForm(instance = order)
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance = order)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Estado de orden actualizado")
+            return redirect('order-detail-admin', order.id)
+    context = {
+        'order': order,
+        'form': form,
+    }
+    return render(request, 'order_detail_admin.html', context)
+
+
+def admin_front(request):
+    orders = Order.objects.filter(ordered = True)
+    total_orders = orders.count()
+    delivered = orders.filter(status = 'Entregado').count()
+    order = orders.filter().order_by('-id')[:5]
+    pending = orders.filter(status = 'Pendiente').count()
+
+    context = {
+        'orders': orders,
+        'order': order,
+        'total_orders': total_orders,
+        'delivered': delivered,
+        'pending': pending,
+    }
+    return render(request, 'front_admin.html', context)
+
+def admin_products(request):
+    products = Product.objects.all()
+    categories = Category.objects.filter(parent = None)
+    product = request.GET.get('product')
+    categorias = request.GET.get('categorias')
+
+    if is_valid_queryparam(product):
+        products = products.filter(name__icontains = product)
+    
+    if is_valid_queryparam(categorias) and categorias != 'Escoger Categoria...':
+        products = products.filter(Q(category__parent=categorias)|Q(category=categorias))
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+
+    return render(request, 'products_admin.html', context)
+
+def create_product(request):
+    form = ProductForm()
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto agregado!")
+            return redirect('admin-products')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'create_product.html', context)
+
+@login_required(login_url = 'loginPage')
+def likeproducts(request, slug):
+    product = get_object_or_404(Product, slug = slug)
+    liked = likedProduct.objects.filter(user = request.user)
+    if liked.filter(product =  product).exists():
+        messages.info(request, "Ya tienes agregado este producto en tu lista.")
+        return redirect('favorites')
+    else:
+        product_like = likedProduct.objects.create(user = request.user, product = product)
+        messages.info(request, "Producto agregado a su lista de favoritos.")
+        return redirect('favorites')
+        
+
+@login_required(login_url = 'loginPage')
+def likedproductsview(request):
+    liked = likedProduct.objects.filter(user = request.user)
+    lista = Listaliked.objects.filter(user = request.user)
+    context =  {
+        'liked': liked,
+        'lista': lista,
+    }
+    return render(request,'favorites.html', context )
+
+def create_lista(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        lista = Listaliked.objects.create(user = request.user, name = name)
+        messages.info(request, "Lista creada")
+        return redirect('favorites')
+    return render(request, 'create_lista.html')
+
+def view_lista(request, pk):
+    lista = Listaliked.objects.get(user = request.user ,id = pk)
+    liked = likedProduct.objects.filter(user = request.user, lista = lista)
+
+    context = {
+        'lista': lista,
+        'liked': liked,
+    }
+
+    return render(request, 'lista_view.html', context)
+
+
+@login_required(login_url = 'loginPage')
+def add_to_favorite(request, slug):
+    product = Product.objects.get(slug = slug)
+    listas = Listaliked.objects.filter(user = request.user)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        lista = Listaliked.objects.create(user = request.user, name = name)
+        messages.info(request, "Lista creada")
+        return redirect('add-favorite', product.slug)
+
+    context = {
+        'product': product,
+        'listas': listas,
+    }
+    return render(request, 'add_favorites.html', context)
+
+def add_favorite_confirm(request, slug, pk):
+    product = Product.objects.get(slug = slug)
+    lista = Listaliked.objects.get(user = request.user, id = pk)
+    lista_products = likedProduct.objects.filter(lista = lista.pk)
+    if lista_products.filter(product  = product ).exists():
+        messages.info(request, "Este producto ya esta en su lista")
+        return redirect('view-lista', lista.id)
+    else:
+        lista_product = likedProduct.objects.create(user = request.user, product = product, lista = lista)
+        lista_product.save()
+        messages.info(request, "Producto Agregado a la lista!")
+        return redirect('view-lista', lista.id)

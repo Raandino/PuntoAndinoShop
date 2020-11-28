@@ -1,0 +1,70 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Dashboard</h1>
+
+</div>
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <div class="card p-4 text-center">
+            <h5 class="card-title font-weight-bold">Ordenes Totales</h5>
+            <hr>
+            <h4 class="card-title">{{total_orders}}</h4>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-4 text-center">
+            <h5 class="card-title font-weight-bold">Ordenes Entregadas</h5>
+            <hr>
+            <h4 class="card-title">{{delivered}}</h4>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-4 text-center">
+            <h5 class="card-title font-weight-bold">Ordenes Pendientes</h5>
+            <hr>
+            <h4 class="card-title">{{pending}}</h4>
+        </div>
+    </div>
+
+</div>
+
+<h1 class="h2 mt-4">Ultimas 5 Ordenes</h1>
+<hr>
+{% if order|length == 0 %}
+                <h5>No se encontraron ordenes</h5>
+            {% else %}
+            <div class="table-responsive text-nowrap table-hover">
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="font-weight-bold">Orden #</th>
+                      <th scope="col" class="font-weight-bold">Fecha</th>
+                      <th scope="col" class="font-weight-bold">Estado</th>
+                      <th scope="col" class="font-weight-bold">Usuario</th>
+                      <th scope="col" class="font-weight-bold">Productos</th>
+                      <th scope="col" class="font-weight-bold">Total</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for order in order %}
+                    <tr>
+                      <td scope="row"><a href="{% url 'order-detail-admin' order.id %}" style="color: #386eaf" id="ordenid">#00{{order.id}}</a></td>
+                      <td>{{order.ordered_date|date:'M d, Y'}},
+                          {{order.ordered_date|time}}
+                      </td>
+                      <td>{{order.status}}</td>
+                      <td>{{order.user.usuario}}</td>
+                      <td>{{order.products.count}}</td>
+                      <td>C${{order.total|floatformat:2}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              
+              </div>
+              {% endif %}
+{% endblock %}

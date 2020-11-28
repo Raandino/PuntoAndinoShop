@@ -28,7 +28,7 @@
             <div class="row">
                 {% for feat in featured %}
                     <div class="col-md-4 mb-2">
-                        <div class="card card-ecommerce">
+                        <div class="card card-ecommerce p-3">
                             <div class="view overlay">
                                 <a href="{% url 'product_detail' feat.category.slug feat.slug %}">
                                 <img src="{{ feat.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
@@ -47,7 +47,8 @@
                                 </h5>
                                 <h6 class="card-text">Puntuación: {% if feat.get_rating == 0 %}No hay reviews{% else %} {{ feat.get_rating|floatformat:1 }} {% endif %}</h6>
                             </div>
-                            <div class="card-footer px-2">
+                            <hr>
+                            <div class=" px-2">
 
                                     <span class="float-left mt-2">
                                         {% if feat.disccount %}
@@ -62,7 +63,7 @@
                                         <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' feat.category.slug feat.slug %}">
                                             <i class="fas fa-eye ml-3"></i>
                                           </a>
-                                          <a href="{% url 'like-products' feat.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                          <a href="{% url 'add-favorite' feat.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                             <i class="fas fa-heart ml-3"></i>
                                           </a>
                                     </span>
@@ -131,7 +132,7 @@
         <div class="row">
             {% for disc in products %}
                 <div class="col-md-4 mb-2">
-                    <div class="card card-ecommerce">
+                    <div class="card card-ecommerce p-3">
                         <div class=" view overlay">
                             <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
                             <a href="{% url 'product_detail' disc.category.slug disc.slug %}">
@@ -149,7 +150,8 @@
                             </h5>
                             <h6 class="card-text">Puntuación: {% if disc.get_rating == 0 %}No hay reviews{% else %} {{ disc.get_rating|floatformat:1 }} {% endif %}</h6>
                         </div>
-                        <div class="card-footer px-2">
+                        <hr>
+                        <div class=" px-2">
 
                                 <span class="float-left mt-2">
                                     {% if disc.disccount %}
@@ -164,7 +166,7 @@
                                     <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' disc.category.slug disc.slug %}">
                                         <i class="fas fa-eye ml-3"></i>
                                       </a>
-                                      <a href="{% url 'like-products' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                      <a href="{% url 'add-favorite' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>
                                 </span>
@@ -187,7 +189,7 @@
         <div class="row">
             {% for disc in new %}
                 <div class="col-md-4 mb-2">
-                    <div class="card card-ecommerce">
+                    <div class="card card-ecommerce p-3">
                         <div class=" view overlay">
                             <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
                             <a href="{% url 'product_detail' disc.category.slug disc.slug %}">
@@ -205,7 +207,8 @@
                             </h5>
                             <h6 class="card-text">Puntuación: {% if disc.get_rating == 0 %}No hay reviews{% else %} {{ disc.get_rating|floatformat:1 }} {% endif %}</h6>
                         </div>
-                        <div class="card-footer px-2">
+                        <hr>
+                        <div class="px-2">
 
                                 <span class="float-left mt-2">
                                     {% if disc.disccount %}
@@ -220,7 +223,7 @@
                                     <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' disc.category.slug disc.slug %}">
                                         <i class="fas fa-eye ml-3"></i>
                                       </a>
-                                      <a href="{% url 'like-products' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
+                                      <a href="{% url 'add-favorite' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>
                                 </span>

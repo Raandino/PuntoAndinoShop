@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %} Checkout | {% endblock %}
+{% block content %}
+<div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
+   
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: white;">
+            <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
+            <li class="breadcrumb-item active" >Escoger Lista</li>
+
+        </ol>
+ 
+   
+    </nav>
+
+</div>
+
+<div class="container wow fadeIn">
+
+    <h2 class="my-5 h2 text-center">Escoger la lista</h2>
+    <h5>Escoge una lista de las que tienes, o puedes crear una nueva!</h5>
+    <hr>
+
+    <div class="row mt-4">
+        <div class="col-md-5 mb-4">
+            <form action="" method="POST" class="text-center card  p-5">
+                {% csrf_token %}
+                <p class="h4 mb-4 font-weight-bold">Crear nueva Lista</p>
+                <hr>
+                <div class="form-group">
+                    <label for="name">Nombre de la Lista</label>
+                    <input type="text" name="name" class="form-control">
+                </div>
+
+                <input type="submit" value="Crear Lista" class="btn  btn-success mb-4">
+            </form>
+        
+        </div>
+
+        <div class="col-md-7 mb-4">
+            <div class="row">
+                {% for lista in listas %}
+                <div class="col-md-6 mb-4">
+                    <div class="card p-2">
+                        <div class="card-body text-center">
+                            <p class="font-weight-bold card-title" style="color: black">{{lista.name}}</p>
+                            <hr>
+                            <a href="{% url 'add-confirm' product.slug lista.pk %}" class="btn btn-sm btn-primary">Escoger </a>
+        
+                        </div>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

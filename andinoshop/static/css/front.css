@@ -2,18 +2,8 @@
     font-family: 'Poppins', sans-serif;  
 }
 
-#featured{
-    
-    object-fit: cover;
 
-}
 
-.profile-pic{
-    max-width: 200px;
-    max-height: 200px;
-    margin: 0 auto;
-    border-radius: 50%;
-}
 
 .dropdown-submenu{
     position: relative;

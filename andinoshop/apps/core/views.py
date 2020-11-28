@@ -5,7 +5,7 @@ from apps.store.decorators import allowed_users, admin_only
 from apps.store.models import Product, Category
 # Create your views here.
 
-
+@admin_only
 def frontpage(request):
     products = list(Product.objects.filter(disccount = True))
     featured = list(Product.objects.filter(is_featured = True))

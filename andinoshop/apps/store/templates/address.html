@@ -19,9 +19,9 @@
     <h3 class="font-weight-bold">Direcciones</h3>
       <div class="row mt-4">
 
-        <div class="col-md-4 mb-2">
-          <div class="card view-overlay">
-            <a href="{% url 'address_create' %}" style="color:black;">
+        <div class="col-md-4 mb-3">
+          <div class="card view-overlay h-100">
+            <a href="{% url 'address_create' %}" style="color:black;" class="my-auto" >
               <div class="card-body text-center my-auto ">
                 <div class="mask rgba-white">
                 <i class="fas fa-plus  fa-3x"></i>
@@ -46,7 +46,8 @@
                     <br>
                     <hr>
                     <a href="{% url 'update-address' address.id %}" class="">Editar  | </a>
-                    <a href="#" class="">Eliminar</a>
+                    <a href="{% url 'address-delete' address.id %}" class="">Eliminar </a>
+
                 </div>
                 
             </div>

@@ -67,7 +67,7 @@
                       <th scope="col" class="font-weight-bold"></th>
                       <th scope="col" class="font-weight-bold">Nombre del producto</th>
                       <th scope="col" class="font-weight-bold">Precio</th>
-                      <th scope="col" class="font-weight-bold">Cantidad</th>
+                      <th scope="col" class="font-weight-bold text-center">Cantidad</th>
                       <th scope="col" class="font-weight-bold">Precio Total</th>
 
                     </tr>
@@ -102,6 +102,15 @@
                         <td  class="h6">Subtotal</td>
                         <td class="h6 ">C${{order.get_total|floatformat:2}}</td>
                     </tr>
+                    {% if order.coupon %}
+                    <tr class=" table-borderless">
+                        <td colspan="3"></td>
+                        <td  class="h6">Cupon de Descuento
+                            <p class="mt-2 grey-text" style="font-size: 12px;">{{ order.coupon.code }} (%{{order.coupon.porcentage}})</p>
+                        </td>
+                        <td class="h6 ">C${{order.get_coupon_save|floatformat:2}}</td>
+                    </tr>
+                    {% endif %}
                     <tr class="table-borderless">
                         <td colspan="3"></td>
                         <td  class="h6">Envio</td>

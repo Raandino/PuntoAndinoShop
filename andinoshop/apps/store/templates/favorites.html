@@ -7,7 +7,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb" style="background-color: white;">
             <li class="breadcrumb-item"><a href="{% url 'frontpage' %}" style="color: black;">Inicio</a></li>
-            <li class="breadcrumb-item active" >Lista de Favoritos</li>
+            <li class="breadcrumb-item active" >Mis Listas</li>
         </ol>
  
     </nav>
@@ -15,65 +15,42 @@
 
 
 <div class="container">
-
-  
-    {% if lista|length < 1 %}
-      <div class="row mt-4">
-
-        <div class="col-md-4">
-          <div class="card">
-            <a href="#" class="waves-light">
-              <div class="card-body text-center">
-                <i class="fas fa-plus  fa-3x"></i>
-              </div>
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-    {% else %}
-    <div class="row">
-      {% for lista in lista %}
-        <div class="col-md-4 mt-4">
-          <div class="card">
-            <a href="#" class="waves-light">
-              <div class="card-body text-center">
-                <h3>{{lista.name}}</h3>
-              </div>
-            </a>
-
-            <div class="card-footer">
-              <div class="row">
-                <div class="col-md-6 border-right text-center font-weight-bold">
-                  d
-                </div>
-                <div class="col-md-6 border-left text-center font-weight-bold">
-                  36K
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-
-      <div class="col-md-4 mt-4">
-        <div class="card">
-          <a href="#" class="waves-light">
-            <div class="card-body text-center">
+    <h3 class="font-weight-bold">Lista de Favoritos</h3>
+    <hr>
+    <div class="row mt-4">
+      <div class="col-md-4 mb-3">
+        <div class="card view-overlay h-100">
+          <a href="{% url 'create-lista' %}" style="color:black;" class="my-auto">
+            <div class="card-body text-center my-auto ">
+              <div class="mask rgba-white">
               <i class="fas fa-plus  fa-3x"></i>
+              <h4 class="mt-4">Añadir Lista</h4>
+          
+
+              </div>
+
             </div>
           </a>
+
         </div>
       </div>
 
+      {% for lista in lista %}
+        <div class="col-md-4 mb-3">
+            <div class="card p-2">
+                <div class="card-body">
+                    <a href="{% url 'view-lista' lista.id %}"><h4 class="font-weight-bold card-title text-center mb-5 mt-2" style="color: black">{{lista.name}}</h4></a>
+                    <hr>
+                    <a href="{% url 'view-lista' lista.id %}" class="">Ver  | </a>
+                    <a href="#" class="">Eliminar </a>
+
+                </div>
+                
+            </div>
+        </div>
+        {% endfor %}
+
     </div>
-    
-
-
-    {% endif %}
-  
-    
     
 </div>
 

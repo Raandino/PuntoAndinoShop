@@ -65,8 +65,8 @@ class Product(models.Model):
     is_featured = models.BooleanField(default = False)
     is_new = models.BooleanField(default = False)
     disccount = models.BooleanField(default = False)
-    dis = models.IntegerField(blank=True, default = 0)
-    quantity_available = models.IntegerField(default = 1)
+    dis = models.IntegerField(blank=True, default = 0, null = True)
+    quantity_available = models.IntegerField(default = 1, blank = True, null = True)
     tags = TaggableManager()
 
     
@@ -180,6 +180,12 @@ class Payment(models.Model):
     def __str__(self):
         return self.user.username
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=15)
+    porcentage = models.IntegerField()
+    
+    def __str__(self):
+        return self.code
 
 class Order(models.Model):
     STATUS = (
@@ -195,6 +201,7 @@ class Order(models.Model):
     status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
     shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, blank = True, null = True)
     payment = models.ForeignKey(Payment, related_name='payment', on_delete=models.SET_NULL, blank = True, null = True)
+    coupon = models.ForeignKey(Coupon, on_delete = models.SET_NULL, blank = True, null = True)
     total = models.FloatField(null = True, blank = True)
 
     def __str__(self):
@@ -210,9 +217,25 @@ class Order(models.Model):
         for order_product in self.products.all():
             total += order_product.get_total_product_price()
         if total > 0:
-            return total+30
+            if self.coupon:
+                div = (100-self.coupon.porcentage)/100
+                total *= div 
+                return total+30
+            else:
+                return total+30
 
-
+    def get_coupon_save(self):
+        if self.coupon:
+            total = 0
+            for order_product in self.products.all():
+                total += order_product.get_total_product_price()
+            div = (100-self.coupon.porcentage)/100
+            tot = total
+            xd = tot*div
+            fin = total - xd
+            return fin
+        else:
+            return None
 class OrderProduct(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, null = True)

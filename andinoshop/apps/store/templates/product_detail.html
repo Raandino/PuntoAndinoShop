@@ -22,12 +22,12 @@
         <div class="container dark-grey-text mt-5">
             <div class="row wow fadein">
                 <div class="col-md-6 mb-4">
-                    <img id="featured" :src="mainImage" alt="" class="img-fluid">
+                    <img :src="mainImage" alt="" class="img-fluid">
                     <div id="slide-wrapper">
                         <div id="slider">
                             <div  v-for="image in images">
                                 <figure  class="thumbnail">
-                                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail" alt="">
+                                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail img-fluid" alt="">
                                 </figure>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                                 <i class="fas fa-shopping-cart ml-1"></i>
                             </a>
                             {% endif %}
-                            <a href="{% url 'like-products' product.slug %}" class="btn btn-primary btn-md my-0 p">Añadir a favoritos
+                            <a href="{% url 'add-favorite' product.slug %}" class="btn btn-primary btn-md my-0 p">Añadir a favoritos
                                 <i class="fas fa-heart ml-1"></i>
                             </a>
                         </form>
