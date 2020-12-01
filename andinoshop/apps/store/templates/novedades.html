@@ -34,6 +34,11 @@
                     <div class="card-body">
                         <h6 class="card-title mb-1"><strong><a href="{% url 'product_detail' product.category.slug product.slug %}" class="dark-grey-text">{{product.name}}</a></strong></h6>
                         <p class="card-text">Puntuación: {% if product.get_rating == 0 %}No hay reviews{% else %} {{ product.get_rating|floatformat:1 }} {% endif %}</p>
+                        {% if product.quantity_available < 1 %}
+                            <span class="badge badge-danger">Agotado</span>
+                        {% else %}
+                            <span class="badge badge-success">Disponible</span>
+                        {% endif %}
                     
                         <hr>
                                 <span class="float-left card-text">{% if product.disccount %}
@@ -44,9 +49,15 @@
                                 {% endif %}</span>
 
                                 <span class="float-right">
-                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' product.category.slug product.slug %}">
-                                        <i class="fas fa-eye ml-3"></i>
+                                    {% if product.quantity_available < 1 %}
+                                    <a class="material-tooltip-main disabled" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' product.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
                                       </a>
+                                      {% else %}
+                                      <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' product.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                      </a>
+                                      {% endif %}
                                       <a class="material-tooltip-main" id="cora" href="{% url 'add-favorite' product.slug %}" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>
@@ -59,7 +70,7 @@
             </div>
             {% endfor %}
         </div>
-        <!--
+        
         <div class="text-center">
             <ul class="pagination pagination-circle pg-blue">
                 
@@ -80,7 +91,7 @@
 
             </ul>
  
-        </div>-->
+        </div>
     </section>
 </div>
 

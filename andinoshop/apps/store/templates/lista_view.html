@@ -53,7 +53,7 @@
 
                       <td>C${{ product.product.price|floatformat:2 }}
                         <div class="float-right ">
-                            {% if order_product.product.quantity_available < 1 %}
+                            {% if product.product.quantity_available < 1 %}
                             <a href="{% url 'add-to-cart' product.product.slug %}" class="disabled">
                                 <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>
                               </a>

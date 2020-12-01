@@ -199,7 +199,7 @@ class Order(models.Model):
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default = False)
     status = models.CharField(max_length=200, null = True, choices = STATUS, default='Pendiente')
-    shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, blank = True, null = True)
+    shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.DO_NOTHING, blank = True, null = True)
     payment = models.ForeignKey(Payment, related_name='payment', on_delete=models.SET_NULL, blank = True, null = True)
     coupon = models.ForeignKey(Coupon, on_delete = models.SET_NULL, blank = True, null = True)
     total = models.FloatField(null = True, blank = True)

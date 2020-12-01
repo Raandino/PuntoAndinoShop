@@ -46,6 +46,11 @@
                                 </a>
                                 </h5>
                                 <h6 class="card-text">Puntuación: {% if feat.get_rating == 0 %}No hay reviews{% else %} {{ feat.get_rating|floatformat:1 }} {% endif %}</h6>
+                                {% if feat.quantity_available < 1 %}
+                                    <span class="badge badge-danger">Agotado</span>
+                                {% else %}
+                                    <span class="badge badge-success">Disponible</span>
+                                {% endif %}
                             </div>
                             <hr>
                             <div class=" px-2">
@@ -60,9 +65,15 @@
                                     </span>
                                     
                                     <span class="float-right mb-2 mt-2">
-                                        <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' feat.category.slug feat.slug %}">
-                                            <i class="fas fa-eye ml-3"></i>
-                                          </a>
+                                        {% if feat.quantity_available < 1 %}
+                                        <a class="material-tooltip-main disabled" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' feat.slug %}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </a>
+                                        {% else %}
+                                        <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' feat.slug %}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </a>
+                                        {% endif %}
                                           <a href="{% url 'add-favorite' feat.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                             <i class="fas fa-heart ml-3"></i>
                                           </a>
@@ -149,6 +160,11 @@
                             </a>
                             </h5>
                             <h6 class="card-text">Puntuación: {% if disc.get_rating == 0 %}No hay reviews{% else %} {{ disc.get_rating|floatformat:1 }} {% endif %}</h6>
+                            {% if disc.quantity_available < 1 %}
+                                    <span class="badge badge-danger">Agotado</span>
+                                {% else %}
+                                    <span class="badge badge-success">Disponible</span>
+                                {% endif %}
                         </div>
                         <hr>
                         <div class=" px-2">
@@ -163,9 +179,15 @@
                                 </span>
                                 
                                 <span class="float-right mb-2 mt-2">
-                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' disc.category.slug disc.slug %}">
-                                        <i class="fas fa-eye ml-3"></i>
+                                    {% if disc.quantity_available < 1 %}
+                                    <a class="material-tooltip-main disabled" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' disc.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
                                       </a>
+                                    {% else %}
+                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' disc.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                      </a>
+                                    {% endif %}
                                       <a href="{% url 'add-favorite' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>
@@ -206,6 +228,11 @@
                             </a>
                             </h5>
                             <h6 class="card-text">Puntuación: {% if disc.get_rating == 0 %}No hay reviews{% else %} {{ disc.get_rating|floatformat:1 }} {% endif %}</h6>
+                            {% if disc.quantity_available < 1 %}
+                                    <span class="badge badge-danger">Agotado</span>
+                                {% else %}
+                                    <span class="badge badge-success">Disponible</span>
+                                {% endif %}
                         </div>
                         <hr>
                         <div class="px-2">
@@ -220,9 +247,15 @@
                                 </span>
                                 
                                 <span class="float-right mb-2 mt-2">
-                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Ver mas" href="{% url 'product_detail' disc.category.slug disc.slug %}">
-                                        <i class="fas fa-eye ml-3"></i>
-                                      </a>
+                                    {% if disc.quantity_available < 1 %}
+                                    <a class="material-tooltip-main disabled" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' disc.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                    {% else %}
+                                    <a class="material-tooltip-main" id="ver" data-toggle="tooltip" data-placement="top" title="Añadir al Carrito" href="{% url 'add-to-cart' disc.slug %}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                    {% endif %}
                                       <a href="{% url 'add-favorite' disc.slug %}" class="material-tooltip-main" id="cora" data-toggle="tooltip" data-placement="top" title="Añadir a Favoritos">
                                         <i class="fas fa-heart ml-3"></i>
                                       </a>

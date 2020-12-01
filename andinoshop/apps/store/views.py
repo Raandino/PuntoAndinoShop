@@ -37,7 +37,7 @@ def search(request):
     query = request.GET.get('query')
     products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query))
 
-    p = Paginator(products, 16)
+    p = Paginator(products, 50)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
 
@@ -190,7 +190,7 @@ def new(request):
 #MUESTRA LOS PRODUCTOS EN DESCUENTO
 def discount(request):
     products = Product.objects.filter(disccount=True)
-    p = Paginator(products, 16)
+    p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
     context = {
@@ -272,11 +272,18 @@ class CartView(LoginRequiredMixin, View):
             pro = OrderProduct.objects.filter(order = order.pk, save_later = False)
             save = OrderProduct.objects.filter(user = self.request.user, save_later = True)
             later = OrderProduct.objects.filter(user = self.request.user, save_later = True)
+            test = False
+
+            order_products = OrderProduct.objects.filter(user = self.request.user, ordered = False, save_later = False)
+            for product in order_products:
+                if product.product.quantity_available < 1:
+                    test = True
             context = {
                 'object': order,
                 'pro': pro,
                 'save': save,
                 'later': later,
+                'test': test,
 
             }
             return render(self.request, 'cart.html', context)
@@ -478,6 +485,7 @@ def payment_view(request):
                 currency="nio",
                 source= token,
             )
+
             
                     #Creando el pago para tener un registro
             payment = Payment()
@@ -486,11 +494,24 @@ def payment_view(request):
             payment.amount = order.total_envio()
             payment.save()
 
+            #reduciendo cantidad del producto del inventario
+            cant = OrderProduct.objects.filter(user = request.user, ordered = False, save_later = False)
+            for t in cant:
+                q = t.product.quantity_available
+                s = t.quantity
+                x = q-s
+                t.product.quantity_available = x
+                t.product.save()
+
             #Asignando el pago a la orden
             order_products = order.products.all()
             order_products.update(ordered=True)
             for product in order_products:
                 product.save()
+
+
+
+
 
             if len(order_products) > 3:
                 coins = 10
