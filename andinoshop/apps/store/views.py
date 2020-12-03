@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from apps.store.decorators import allowed_users, admin_only
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
@@ -35,7 +35,7 @@ stripe.api_key = "sk_test_51HpNstHKhVhWsHEkwcl8cL6uizY5xfJR2KMx5F25ddUlKvFAID87R
 #BUSQUEDA DE PRODUCTOS DIRECTA
 def search(request):
     query = request.GET.get('query')
-    products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query))
+    products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query)).filter(alta = False)
 
     p = Paginator(products, 50)
     page_number = request.GET.get('page')
@@ -52,10 +52,16 @@ def search(request):
 #DETALLES DEL PRODUCTO EN SI
 def product_detail(request, slug, category_slug):
     product = get_object_or_404(Product, slug=slug)
+    product.num_visits = product.num_visits + 1
+    product.save()
+    if product.num_visits > 15:
+        product.is_featured = True
+        product.save()
     usuario = Usuario.objects.all()
     related_products = list(product.category.products.all().exclude(id=product.id))
     if len(related_products) >= 3:
         related_products = random.sample(related_products, 3)
+
 
         
     if request.method == 'POST' and request.user.is_authenticated:
@@ -90,7 +96,7 @@ def is_valid_queryparam(param):
 #PRODUCTOS DE LA CATEGORIA SELECCIONADA
 def category_detail(request, slug):
 
-    products = Product.objects.all()
+    products = Product.objects.filter(alta = False)
     category = get_object_or_404(Category, slug=slug)
     pricemin = request.GET.get('price_min')
     pricemax = request.GET.get('price_max')  
@@ -142,7 +148,7 @@ def category_detail(request, slug):
     
     context = {
         'category': category,
-        'products' : products,
+        'products' : page_obj,
         'q': q,
         'pricemin': pricemin,
         'pricemax': pricemax,
@@ -163,7 +169,7 @@ def category_detail(request, slug):
 
 #MUESTRA LOS PRODUCTOS DESTACADOS
 def featured(request):
-    products = Product.objects.filter(is_featured=True)
+    products = Product.objects.filter(is_featured=True, alta = False)
     p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
@@ -176,7 +182,7 @@ def featured(request):
 
 #MUESTRA LAS NOVEDADES
 def new(request):
-    products = Product.objects.filter(is_new=True)
+    products = Product.objects.filter(alta = False).order_by('-date_added')[:10]
     p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
@@ -189,7 +195,7 @@ def new(request):
 
 #MUESTRA LOS PRODUCTOS EN DESCUENTO
 def discount(request):
-    products = Product.objects.filter(disccount=True)
+    products = Product.objects.filter(disccount=True, alta = False)
     p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
@@ -502,6 +508,9 @@ def payment_view(request):
                 x = q-s
                 t.product.quantity_available = x
                 t.product.save()
+                t.original_price = t.product.price
+                t.save()
+
 
             #Asignando el pago a la orden
             order_products = order.products.all()
@@ -588,14 +597,22 @@ def orders_client(request):
     status = request.GET.get('status')
     sorting = request.GET.get('sorting')
 
+
     if is_valid_queryparam(sorting) and sorting != 'Escoge...':
         order = order.order_by(sorting)
     
     if status:
         order = order.filter(status__in = request.GET.getlist('status'))
 
+    p = Paginator(order, 8)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)
+    except EmptyPage:
+        page_obj = p.get_page(1)
+
     context = {
-        'order': order,
+        'order': page_obj,
         'order_product': order_product,
         'sorting': sorting,
         'status': status,
@@ -757,8 +774,14 @@ def orders_admin(request):
     if is_valid_queryparam(date_max):
         order = order.filter(ordered_date__lt = date_max)
 
+    p = Paginator(order, 12)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)
+    except EmptyPage:
+        page_obj = p.get_page(1)
     context = {
-        'order': order,
+        'order': page_obj,
         'order_product': order_product,
         'sorting': sorting,
         'status': status,
@@ -789,12 +812,22 @@ def admin_front(request):
     order = orders.filter().order_by('-id')[:5]
     pending = orders.filter(status = 'Pendiente').count()
 
+
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+    pending_today = orders.filter(status = 'Pendiente', ordered_date__range=(today_min, today_max))
+    q = 0
+    for p in pending_today:
+        q += p.total
+
     context = {
         'orders': orders,
         'order': order,
         'total_orders': total_orders,
         'delivered': delivered,
         'pending': pending,
+        'pending_today': pending_today,
+        'q': q,
     }
     return render(request, 'front_admin.html', context)
 
@@ -809,8 +842,15 @@ def admin_products(request):
     
     if is_valid_queryparam(categorias) and categorias != 'Escoger Categoria...':
         products = products.filter(Q(category__parent=categorias)|Q(category=categorias))
+
+    p = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)
+    except EmptyPage:
+        page_obj = p.get_page(1)
     context = {
-        'products': products,
+        'products': page_obj,
         'categories': categories,
     }
 
@@ -901,3 +941,31 @@ def add_favorite_confirm(request, slug, pk):
         lista_product.save()
         messages.info(request, "Producto Agregado a la lista!")
         return redirect('view-lista', lista.id)
+
+def delete_lista(request, pk):
+    lista = Listaliked.objects.get(user = request.user, id = pk)
+    lista.delete()
+    messages.success(request, 'Lista eliminada satisfactoriamente')
+    return redirect('favorites')
+
+def update_product(request, pk):
+    product = Product.objects.get(id = pk)
+    form = ProductForm(instance = product)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST,request.FILES, instance = product)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Producto actualizado")
+            return redirect('admin-products')
+    context = {
+        'form': form,
+    }
+    return render(request,'edit_product.html', context)
+
+def categories_admin(request):
+    categories = Category.objects.filter(parent = None)
+    context = {
+        'category': categories,
+    }
+    return render(request, 'categories_admin.html', context)

@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User 
 from django import forms
+from taggit.forms import TagWidget
 from .models import *
 
 
@@ -60,7 +61,7 @@ class OrderForm(ModelForm):
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'slug', 'category', 'brand', 'description', 'original_price', 'disccount', 'dis', 'tags', 'image', 'quantity_available']
+        fields = ['name', 'slug', 'category', 'brand', 'description', 'original_price', 'disccount', 'dis', 'tags', 'image', 'quantity_available', 'alta']
         widgets = {
             'name': forms.TextInput(attrs = {'class': 'form-control'}),
             'slug': forms.TextInput(attrs = {'class': 'form-control'}),
@@ -69,6 +70,6 @@ class ProductForm(ModelForm):
             'description': forms.Textarea(attrs = {'class': 'form-control'}),
             'original_price': forms.TextInput(attrs = {'class': 'form-control'}),
             'dis': forms.NumberInput(attrs = {'class': 'form-control'}),
-            'tags': forms.TextInput(attrs = {'class': 'form-control'}),
+            'tags': TagWidget(attrs = {'class': 'form-control'}),
             'quantity_available': forms.NumberInput(attrs = {'class': 'form-control'}),
         }

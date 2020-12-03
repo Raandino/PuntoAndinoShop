@@ -47,6 +47,8 @@ class Category(models.Model):
         return self.title
 
 
+
+
 class Brand(models.Model):
     name = models.CharField(max_length=200, null = True)
     slug = models.SlugField(max_length=200, null = True)
@@ -68,6 +70,8 @@ class Product(models.Model):
     dis = models.IntegerField(blank=True, default = 0, null = True)
     quantity_available = models.IntegerField(default = 1, blank = True, null = True)
     tags = TaggableManager()
+    alta = models.BooleanField(default = False)
+    num_visits = models.IntegerField(default = 0)
 
     
     image = models.ImageField(upload_to = 'images/',blank = True, null = True)
@@ -84,7 +88,7 @@ class Product(models.Model):
 
         if self.disccount:
             div = (100-self.dis)/100
-            self.price = div * self.price
+            self.price = div * self.original_price
 
         
         else: 
@@ -224,6 +228,12 @@ class Order(models.Model):
             else:
                 return total+30
 
+    def subtotal_orden(self):
+        total = 0
+        for order_product in self.products.all():
+            total += order_product.get_total_en_orden()
+        return total
+
     def get_coupon_save(self):
         if self.coupon:
             total = 0
@@ -242,6 +252,7 @@ class OrderProduct(models.Model):
     ordered =  models.BooleanField(default = False)
     order = models.ForeignKey(Order, related_name='products', on_delete = models.CASCADE, null = True)
     product = models.ForeignKey(Product, related_name='products', on_delete = models.DO_NOTHING)
+    original_price = models.FloatField(null = True)
     price = models.FloatField()
     quantity = models.IntegerField(default = 1)
     save_later = models.BooleanField(default = False)
@@ -252,6 +263,7 @@ class OrderProduct(models.Model):
 
     def save(self, *args, **kwargs):
         self.price = self.quantity * self.product.price
+
         super().save(*args, **kwargs)    
 
     def get_total_product_price(self):
@@ -259,6 +271,9 @@ class OrderProduct(models.Model):
 
     def get_amount_save(self):
         return self.quantity * self.product.get_dis()
+
+    def get_total_en_orden(self):
+        return self.quantity * self.original_price
 
 
 class Listaliked(models.Model):

@@ -1,0 +1,33 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% load store_extras %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Categorias</h1>
+
+  </div>
+
+  <div class="table-responsive text-nowrap table-hover">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" class="font-weight-bold">Categoria</th>
+          <th scope="col" class="font-weight-bold text-center">Subcategorias</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for category in category %}
+        <tr>
+          <td scope="row"><a href="#" style="color: #386eaf" id="ordenid">{{category.title}}</a></td>
+          <td class="text-center">{{category.children.count}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+  </div>
+
+
+  {% endblock %}

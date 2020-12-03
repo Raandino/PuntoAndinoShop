@@ -42,7 +42,7 @@
                     <a href="{% url 'view-lista' lista.id %}"><h4 class="font-weight-bold card-title text-center mb-5 mt-2" style="color: black">{{lista.name}}</h4></a>
                     <hr>
                     <a href="{% url 'view-lista' lista.id %}" class="">Ver  | </a>
-                    <a href="#" class="">Eliminar </a>
+                    <a href="{% url 'delete_lista' lista.id %}" class="">Eliminar </a>
 
                 </div>
                 

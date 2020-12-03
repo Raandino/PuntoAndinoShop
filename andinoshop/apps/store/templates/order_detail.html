@@ -85,22 +85,19 @@
                         <p class="mt-2 grey-text">{{ order_product.product.brand.name }}</p>  
                     </td>
                     <td>
-                        {% if order_product.product.disccount %}
-                        <del style="color: grey;">C${{ order_product.product.original_price|floatformat:2 }}</del> 
-                        C${{ order_product.product.price|floatformat:2 }}
-                        {% else %}
-                        C${{ order_product.product.price|floatformat:2 }}
-                        {% endif %}
+       
+                        C${{ order_product.original_price|floatformat:2 }}
+
                     </td>
                     <td class="text-center">{{order_product.quantity}}</td>
-                    <td>C${{ order_product.get_total_product_price|floatformat:2}}</td>
+                    <td>C${{ order_product.price|floatformat:2}}</td>
                     </tr>
                     {% endfor %}
 
                     <tr class="">
                         <td colspan="3"></td>
                         <td  class="h6">Subtotal</td>
-                        <td class="h6 ">C${{order.get_total|floatformat:2}}</td>
+                        <td class="h6 ">C${{order.subtotal_orden|floatformat:2}}</td>
                     </tr>
                     {% if order.coupon %}
                     <tr class=" table-borderless">

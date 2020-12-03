@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load store_extras %}
 {% block title %}{{ category.title }} | {% endblock %}
 {% block content %}
 <div class="pt-2 px-md-4 mb-3 bg-white border-bottom shadow-sm" id="search-query">
@@ -158,9 +158,31 @@
                 
                     {% endif %}
             </div>
+            <div class="text-center">
+                <ul class="pagination pagination-circle pg-blue">
+                    
+                    <li class="page-item"><a href="{% my_url 1 'page' request.GET.urlencode %}" class="page-link">Inicio</a></li>
+                    {% if products.has_previous %}
+        
+                        <li class="page-item"><a href="{% my_url products.previous_page_number 'page' request.GET.urlencode %}" class="page-link">Anterior</a></li>
+                    {% endif %}
+        
+                    {% for page in products.paginator %}
+                    <li class="page-item" id="paginas"><a href="{% my_url page.number 'page' request.GET.urlencode %}" class="page-link">{{ page.number }}</a></li>
+                    {% endfor %}
+        
+                    {% if products.has_next %}
+                    <li class="page-item"><a href="{% my_url products.next_page_number 'page' request.GET.urlencode %}" class="page-link">Siguiente</a></li>
+                    <li class="page-item"><a href="{% my_url products.paginator.num_pages 'page' request.GET.urlencode %}" class="page-link">Ultimo</a></li>
+                    {% endif %}
+        
+                </ul>
+        
+            </div>
      
         </div>
     </div>
+
 </div>
 
 

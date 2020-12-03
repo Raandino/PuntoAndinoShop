@@ -1,5 +1,6 @@
 {% extends 'baseadmin.html' %}
 {% load static %}
+{% load store_extras %}
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Productos</h1>
@@ -55,7 +56,7 @@
               <tbody>
                   {% for products in products %}
                 <tr>
-                  <td scope="row"><a href="#" style="color: #386eaf" id="ordenid">{{products.name}}</a></td>
+                  <td scope="row"><a href="{% url 'update-product' products.id %}" style="color: #386eaf" id="ordenid">{{products.name}}</a></td>
                   <td>{{products.category.title}}</td>
                   <td>C${{products.price|floatformat:2}}</td>
                   <td class="text-center">{{products.quantity_available}}</td>
@@ -63,7 +64,27 @@
                 {% endfor %}
               </tbody>
             </table>
-          
+            <div class="text-center">
+              <ul class="pagination pagination-circle pg-blue">
+                  
+                  <li class="page-item"><a href="{% my_url 1 'page' request.GET.urlencode %}" class="page-link">Inicio</a></li>
+                  {% if products.has_previous %}
+      
+                      <li class="page-item"><a href="{% my_url products.previous_page_number 'page' request.GET.urlencode %}" class="page-link">Anterior</a></li>
+                  {% endif %}
+      
+                  {% for page in products.paginator %}
+                  <li class="page-item" id="paginas"><a href="{% my_url page.number 'page' request.GET.urlencode %}" class="page-link">{{ page.number }}</a></li>
+                  {% endfor %}
+      
+                  {% if products.has_next %}
+                  <li class="page-item"><a href="{% my_url products.next_page_number 'page' request.GET.urlencode %}" class="page-link">Siguiente</a></li>
+                  <li class="page-item"><a href="{% my_url products.paginator.num_pages 'page' request.GET.urlencode %}" class="page-link">Ultimo</a></li>
+                  {% endif %}
+      
+              </ul>
+      
+          </div>
           </div>
           {% endif %}
     </div>

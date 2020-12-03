@@ -7,9 +7,9 @@ from apps.store.models import Product, Category
 
 @admin_only
 def frontpage(request):
-    products = list(Product.objects.filter(disccount = True))
-    featured = list(Product.objects.filter(is_featured = True))
-    new = list(Product.objects.filter(is_new = True))
+    products = list(Product.objects.filter(disccount = True, alta = False))
+    featured = list(Product.objects.filter(is_featured = True, alta = False))
+    new = list(Product.objects.filter(alta = False).order_by('-date_added')[:10])
     if len(featured) >= 3:
         featured = random.sample(featured, 3)
 

@@ -1,5 +1,6 @@
 {% extends 'baseadmin.html' %}
 {% load static %}
+{% load store_extras %}
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Ordenes</h1>
@@ -97,11 +98,34 @@
                     {% endfor %}
                   </tbody>
                 </table>
+                <div class="text-center">
+                    <ul class="pagination pagination-circle pg-blue">
+                        
+                        <li class="page-item"><a href="{% my_url 1 'page' request.GET.urlencode %}" class="page-link">Inicio</a></li>
+                        {% if order.has_previous %}
+            
+                            <li class="page-item"><a href="{% my_url order.previous_page_number 'page' request.GET.urlencode %}" class="page-link">Anterior</a></li>
+                        {% endif %}
+            
+                        {% for page in order.paginator %}
+                        <li class="page-item" id="paginas"><a href="{% my_url page.number 'page' request.GET.urlencode %}" class="page-link">{{ page.number }}</a></li>
+                        {% endfor %}
+            
+                        {% if order.has_next %}
+                        <li class="page-item"><a href="{% my_url order.next_page_number 'page' request.GET.urlencode %}" class="page-link">Siguiente</a></li>
+                        <li class="page-item"><a href="{% my_url order.paginator.num_pages 'page' request.GET.urlencode %}" class="page-link">Ultimo</a></li>
+                        {% endif %}
+            
+                    </ul>
+            
+                </div>
               
               </div>
               {% endif %}
         </div>
+
     </div>
+
 
 
 
