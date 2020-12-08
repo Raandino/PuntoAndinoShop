@@ -8,7 +8,7 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import CreateUserForm, CustomerForm, AddressForm, CouponForm, OrderForm, ProductForm
+from .forms import CreateUserForm, CustomerForm, AddressForm, CouponForm, OrderForm, ProductForm, CategoryForm
 from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment, Coupon
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
@@ -279,17 +279,23 @@ class CartView(LoginRequiredMixin, View):
             save = OrderProduct.objects.filter(user = self.request.user, save_later = True)
             later = OrderProduct.objects.filter(user = self.request.user, save_later = True)
             test = False
+            alta = False
 
             order_products = OrderProduct.objects.filter(user = self.request.user, ordered = False, save_later = False)
             for product in order_products:
                 if product.product.quantity_available < 1:
                     test = True
+            
+            for product in order_products:
+                if product.product.alta:
+                    alta = True
             context = {
                 'object': order,
                 'pro': pro,
                 'save': save,
                 'later': later,
                 'test': test,
+                'alta': alta,
 
             }
             return render(self.request, 'cart.html', context)
@@ -812,13 +818,72 @@ def admin_front(request):
     order = orders.filter().order_by('-id')[:5]
     pending = orders.filter(status = 'Pendiente').count()
 
-
+    date = datetime.date.today()
+    today = datetime.datetime.now()
+    #PARA HOY
     today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
     today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+
+    #PARA LA SEMANA
+    week_min = date - datetime.timedelta(date.weekday())
+    week_max = week_min + datetime.timedelta(7)
+
+    #PARA EL MES
+
+
     pending_today = orders.filter(status = 'Pendiente', ordered_date__range=(today_min, today_max))
     q = 0
     for p in pending_today:
         q += p.total
+
+    pending_week = orders.filter(status = 'Pendiente', ordered_date__range=(week_min, week_max))
+    w = 0
+    for p in pending_week:
+        w += p.total
+    pending_month = orders.filter(status = 'Pendiente', ordered_date__month=today.month)
+    m = 0
+    for p in pending_month:
+        m += p.total
+    pending_year = orders.filter(status = 'Pendiente', ordered_date__year=today.year)
+    y = 0
+    for p in pending_year:
+        y += p.total
+    pending_alltime = orders.filter(status = 'Pendiente')
+    t = 0
+    for p in pending_alltime:
+        t += p.total
+
+
+    ################################################################################################
+    sent_today = orders.filter(status = 'Entregado', ordered_date__range=(today_min, today_max))
+    q_s = 0
+    for p in sent_today:
+        q_s += p.total
+
+    sent_week = orders.filter(status = 'Entregado', ordered_date__range=(week_min, week_max))
+    w_s = 0
+    for p in sent_week:
+        w_s += p.total
+    sent_month = orders.filter(status = 'Entregado', ordered_date__month=today.month)
+    m_s = 0
+    for p in sent_month:
+        m_s += p.total
+    sent_year = orders.filter(status = 'Entregado', ordered_date__year=today.year)
+    y_s = 0
+    for p in sent_year:
+        y_s += p.total
+    sent_alltime = orders.filter(status = 'Entregado')
+    t_s = 0
+    for p in sent_alltime:
+        t_s += p.total
+
+
+    total_today = q+q_s
+    total_week = w+w_s
+    total_month = m+m_s
+    total_year = y+y_s
+    total_alltime = t+t_s
+
 
     context = {
         'orders': orders,
@@ -827,7 +892,20 @@ def admin_front(request):
         'delivered': delivered,
         'pending': pending,
         'pending_today': pending_today,
-        'q': q,
+        'pending_week': pending_week,
+        'pending_month': pending_month,
+        'pending_year': pending_year,
+        'pending_alltime': pending_alltime,
+        'sent_today': sent_today,
+        'sent_week': sent_week,
+        'sent_month': sent_month,
+        'sent_year': sent_year,
+        'sent_alltime': sent_alltime,
+        'total_today': total_today,
+        'total_week': total_week,
+        'total_month': total_month,
+        'total_year': total_year,
+        'total_alltime': total_alltime,
     }
     return render(request, 'front_admin.html', context)
 
@@ -969,3 +1047,54 @@ def categories_admin(request):
         'category': categories,
     }
     return render(request, 'categories_admin.html', context)
+
+def category_admin_detail(request, pk):
+    category = Category.objects.get(pk = pk)
+    form = CategoryForm(instance = category)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance = category)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Categoria Actualizada")
+            return redirect('category_detail_admin', category.pk)
+    context = {
+        'category': category,
+        'form': form,
+    }
+    return render(request, 'category_admin_detail.html', context)
+
+def sub_category(request, pk):
+    category = Category.objects.get(pk = pk)
+    context = {
+        'category': category,
+    }
+    return render(request, 'sub_categories.html', context)
+
+def create_category(request):
+    form = CategoryForm()
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Categoria Creada")
+            return redirect('categories')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'create_category.html', context)
+
+def update_subcategory(request, pk):
+    subcategory = Category.objects.get(pk = pk)
+    form = CategoryForm(instance = subcategory)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance = subcategory)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Categoria Actualizada")
+            return redirect('update-sub', subcategory.pk)
+    context = {
+        'category': subcategory,
+        'form': form,
+    }
+    return render(request, 'update_subcategories.html', context)

@@ -5,6 +5,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="description" content="Pagina Punto Andino Shop">
+    <meta name="keywords" content="HTML, CSS, Python, tienda, ecommerce, andino, shop">
+    <meta name="author" content="Punto Andino Shop">
     <title>{% block title %}{% endblock %}Punto Andino Shop</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
   <!-- Google Fonts Roboto -->
@@ -49,9 +53,14 @@
                 <a href="{% url 'category_detail' category.slug %}" class="w-100">Ver todo</a>
               </li>
               {% for subcategory in category.children.all %}
+              {% if subcategory.alta %}
+
+              {% else %}
               <li class="dropdown-item p-0">
                 <a href="{% url 'category_detail' subcategory.slug %}" class="w-100">{{subcategory.title}}</a>
               </li>
+
+              {% endif %}
               {% endfor %} 
             </ul>
           </li>

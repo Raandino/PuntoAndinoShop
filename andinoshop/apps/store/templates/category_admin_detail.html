@@ -1,0 +1,45 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% load store_extras %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    
+    <h1 class="h2">{{category.title}}</h1>
+    
+
+  </div>
+  
+  <div class="">
+        <span href="#" style="color: black;">Información de Categoria</span> |
+        <a href="{% url 'sub_category' category.pk %}">Subcategorias</a>
+        <hr>
+
+        <form action="" class="mb-5" method="POST" >
+            {% csrf_token %}
+    
+            <div class="form-group">
+              <label for="name">Nombre de la Categoria: </label>
+              {{form.title}}
+            </div>
+
+            <div class="form-group">
+                <label for="name">Slug: </label>
+                {{form.slug}}
+            </div>
+
+            <div class="form-group">
+                <label for="name">Orden: </label>
+                {{form.ordering}}
+            </div>
+
+            <div class="form-group">
+                {{form.alta}}
+                <label  for="" style="cursor: pointer;">Dar de alta</label>
+            </div>
+            <input type="submit" value="Editar Categoria" class="btn  btn-success mb-4">
+
+        </form>
+  </div>
+
+
+  {% endblock %}

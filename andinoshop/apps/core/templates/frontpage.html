@@ -31,7 +31,7 @@
                         <div class="card card-ecommerce p-3">
                             <div class="view overlay">
                                 <a href="{% url 'product_detail' feat.category.slug feat.slug %}">
-                                <img src="{{ feat.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
+                                <img src="{{ feat.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="{{feat.name}}">
                                 
                                     <div class="mask rgba-white-light"></div>
                                 </a>
@@ -94,7 +94,7 @@
                 <div class="card">
 
                         <div class="view overlay">
-                            <img src="{% static "limpieza-hogar.jpg" %}" alt="" class="card-img-top">
+                            <img src="{% static "limpieza-hogar.jpg" %}" alt="Limpieza del Hogar" class="card-img-top">
                             <a href="{% url 'category_detail' 'limpieza' %}">
                                 <div class="mask rgba-white-light"></div>
                             </a>
@@ -113,7 +113,7 @@
                 <div class="card">
 
                         <div class="view overlay">
-                            <img src="{% static "lavanderia.jpg" %}" alt="" " class="card-img-top">
+                            <img src="{% static "lavanderia.jpg" %}" alt="Lavanderia"  class="card-img-top">
                             <a href="{% url 'category_detail' 'lavanderia' %}">
                                 <div class="mask rgba-white-light"></div>
                             </a>
@@ -145,7 +145,7 @@
                 <div class="col-md-4 mb-2">
                     <div class="card card-ecommerce p-3">
                         <div class=" view overlay">
-                            <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
+                            <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="{{disc.name}}">
                             <a href="{% url 'product_detail' disc.category.slug disc.slug %}">
                                 <div class="mask rgba-white-light"></div>
                             </a>
@@ -213,7 +213,7 @@
                 <div class="col-md-4 mb-2">
                     <div class="card card-ecommerce p-3">
                         <div class=" view overlay">
-                            <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="">
+                            <img src="{{ disc.thumbnail.url }}" class="img-fluid mx-auto d-block" alt="{{disc.name}}">
                             <a href="{% url 'product_detail' disc.category.slug disc.slug %}">
                                 <div class="mask rgba-white-light"></div>
                             </a>

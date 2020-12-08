@@ -38,6 +38,7 @@ class Category(models.Model):
     title = models.CharField(max_length= 200, null = True)
     slug = models.SlugField(max_length=200, null = True) 
     ordering = models.IntegerField(default = 0)
+    alta = models.BooleanField(default = False)
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -46,6 +47,8 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return '/%s/' % (self.slug)
 
 
 

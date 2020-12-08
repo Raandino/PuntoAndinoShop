@@ -40,7 +40,7 @@
           {% for order_product in object.products.all|dictsort:"id" %}
           {% if order_product.save_later is False %}
           <tr>  
-          <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
+          <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="{{order_product.product.name}}" width="100px">
             <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
               <div class="mask rgba-white-light">
 
@@ -53,9 +53,13 @@
                             {% endif %}
             {% if order_product.product.quantity_available < 1 %}
                     <span class="badge badge-danger">Agotado</span>
+
+            {% elif order_product.product.alta %}
+                    <span class="badge badge-danger">No disponible</span>
             {% else %}
                      <span class="badge badge-success">Disponible</span>
             {% endif %}
+
           </td>
           <td>C${{ order_product.product.price|floatformat:2 }}</td>
           <td class="text-center" style="color:grey;">
@@ -119,7 +123,9 @@
 
                   {% if test %}
                   <a href="{% url 'shipping' %}" class="btn btn-warning ml-2 float-right disabled">Ir a checkout</a>
-                  
+      
+                  {% elif alta %}
+                  <a href="{% url 'shipping' %}" class="btn btn-warning ml-2 float-right disabled">Ir a checkout</a>
                   {% else %}
                   <a href="{% url 'shipping' %}" class="btn btn-warning ml-2 float-right">Ir a checkout</a>
                   {% endif %}
@@ -149,7 +155,7 @@
         {% for order_product in later %}
         {% if order_product.save_later is True %}
           <tr>
-            <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="" width="100px">
+            <td class="view overlay"><img src="{{order_product.product.thumbnail.url}}" class="Generic placeholder image"alt="{{order_product.product.name}}" width="100px">
               <a href="{% url 'product_detail' order_product.product.category.slug order_product.product.slug %}">
                 <div class="mask rgba-white-light">
   
@@ -162,9 +168,14 @@
                               {% endif %}
               {% if order_product.product.quantity_available < 1 %}
                       <span class="badge badge-danger">Agotado</span>
+
+              {% elif order_product.product.alta %}
+                      <span class="badge badge-danger">No Disponible</span>
               {% else %}
                        <span class="badge badge-success">Disponible</span>
               {% endif %}
+
+
             </td>
             <td class="text-center">C${{ order_product.product.price|floatformat:2 }}
               <div class="float-right ">
@@ -172,6 +183,12 @@
                 <a href="{% url 'add-to-cart' order_product.product.slug %}" class="disabled">
                     <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>
                   </a>
+
+                {% elif order_product.product.alta %}
+                <a href="{% url 'add-to-cart' order_product.product.slug %}" class="disabled">
+                  <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>
+                </a>
+                
                 {% else %}
                 <a href="{% url 'move-to-cart' order_product.product.slug %}">
                   <i class="fas fa-shopping-cart mr-2" id="cora" title="Mover al carrito"></i>

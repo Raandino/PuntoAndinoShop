@@ -1,0 +1,35 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% load store_extras %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{category.title}}</h1>
+    <a href="{% url 'create-category' %}" class="btn btn-primary">Crear Categoria</a>
+
+  </div>
+
+  <a href="{% url 'category_detail_admin' category.pk %}" >Información de Categoria</a> |
+  <span >Subcategorias</span>
+  <hr>
+  <div class="table-responsive text-nowrap table-hover">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" class="font-weight-bold">Subcategoria</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for subcategory in category.children.all %}
+        <tr>
+          <td scope="row"><a href="{% url 'update-sub' subcategory.pk  %}" style="color: #386eaf" id="ordenid">{{subcategory.title}}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+  </div>
+
+
+  {% endblock %}

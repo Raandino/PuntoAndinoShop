@@ -4,6 +4,7 @@
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Categorias</h1>
+    <a href="{% url 'create-category' %}" class="btn btn-primary">Crear Categoria</a>
 
   </div>
 
@@ -20,7 +21,7 @@
       <tbody>
           {% for category in category %}
         <tr>
-          <td scope="row"><a href="#" style="color: #386eaf" id="ordenid">{{category.title}}</a></td>
+          <td scope="row"><a href="{% url 'category_detail_admin' category.pk %}" style="color: #386eaf" id="ordenid">{{category.title}}</a></td>
           <td class="text-center">{{category.children.count}}</td>
         </tr>
         {% endfor %}

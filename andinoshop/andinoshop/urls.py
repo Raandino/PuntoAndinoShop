@@ -17,14 +17,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
 
 from apps.core.views import frontpage
 from apps.store.views import *
+from .sitemaps import *
+
+sitemaps = {'static': StaticViewSitemap, 'product': ProductSiteMap, 'category': CategorySiteMap}
 
 
 urlpatterns = [
     path('', frontpage, name='frontpage'),
     path('search/', search, name='search'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name = 'django.contrib.sitemaps.views.sitemap'),
     path('change-confirm/<str:pk>/<str:order_pk>/', change_address_confirm, name = 'change-confirm'),
     path('update-address/<str:pk>/', update_address, name = 'update-address'),
     path('admin/', admin.site.urls),
@@ -42,15 +47,19 @@ urlpatterns = [
     path('coins/', coins_view, name = 'coins'),
     path('change-address/<str:pk>/', change_address, name = 'change-address'),
     path('discount/', discount, name='discount'),
+    path('category-detail-admin/<str:pk>/', category_admin_detail, name = 'category_detail_admin'),
     path('cart/', CartView.as_view(), name = 'cart'),
     path('order-detail/<str:pk>/', order_detail, name = 'order-detail'),
+    path('create-category/', create_category, name = 'create-category'),
     path('test/<str:pk>/', test, name = 'test'),
     path('categories', categories_admin, name = 'categories'),
     path('admin-view/', admin_front, name = 'admin-view'),
     path('profile/', profilePage, name = 'profilePage'),
     path('order-detail-admin/<str:pk>/', order_detail_admin, name = 'order-detail-admin'),
     path('add-to-cart/<slug>/', add_to_cart, name = 'add-to-cart'),
+    path('update-subcategory/<str:pk>/', update_subcategory, name = 'update-sub'),
     path('orders-admin/', orders_admin, name = 'orders-admin'),
+    path('subcategories-category/<str:pk>/', sub_category, name = 'sub_category'),
     path('create-lista/', create_lista, name = 'create-lista'),
     path('remove-from-cart/<slug>/', remove_from_cart, name = 'remove_from_cart'),
     path('remove-quantity-cart/<slug>/', remove_quantity_from_cart, name = 'remove_quantity_from_cart'),

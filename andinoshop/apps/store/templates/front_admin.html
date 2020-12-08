@@ -50,26 +50,26 @@
                     <tr>
                       <td scope="row">Pendientes</td>
                       <td class="text-center">{{pending_today.count}}</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
+                      <td class="text-center">{{pending_week.count}}</td>
+                      <td class="text-center">{{pending_month.count}}</td>
+                      <td class="text-center">{{pending_year.count}}</td>
+                      <td class="text-center">{{pending_alltime.count}}</td>
                     </tr>
                     <tr>
                       <td scope="row">Entregadas</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
-                      <td class="text-center">0</td>
+                      <td class="text-center">{{sent_today.count}}</td>
+                      <td class="text-center">{{sent_week.count}}</td>
+                      <td class="text-center">{{sent_month.count}}</td>
+                      <td class="text-center">{{sent_year.count}}</td>
+                      <td class="text-center">{{sent_alltime.count}}</td>
                     </tr>
                     <tr>
                       <td scope="row">Total</td>
-                      <td class="text-center">C${{q|floatformat:2}}</td>
-                      <td class="text-center">C$0</td>
-                      <td class="text-center">C$0</td>
-                      <td class="text-center">C$0</td>
-                      <td class="text-center">C$0</td>
+                      <td class="text-center">C${{total_today|floatformat:2}}</td>
+                      <td class="text-center">C${{total_week|floatformat:2}}</td>
+                      <td class="text-center">C${{total_month|floatformat:2}}</td>
+                      <td class="text-center">C${{total_year|floatformat:2}}</td>
+                      <td class="text-center">C${{total_alltime|floatformat:2}}</td>
                     </tr>
                   </tbody>
                 </table>

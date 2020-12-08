@@ -22,12 +22,12 @@
         <div class="container dark-grey-text mt-5">
             <div class="row wow fadein">
                 <div class="col-md-6 mb-4">
-                    <img :src="mainImage" alt="" class="img-fluid">
+                    <img :src="mainImage" alt="{{product.name}}" class="img-fluid">
                     <div id="slide-wrapper">
                         <div id="slider">
                             <div  v-for="image in images">
                                 <figure  class="thumbnail">
-                                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail img-fluid" alt="">
+                                    <img :src="image.thumbnail" @click="changeMainImage(image.image)" class="thumbnail img-fluid" alt="{{product.name}}">
                                 </figure>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
 
                 <div class="col-lg-4 col-md-12 mb-4">
                     <div class="view overlay">
-                        <img src="{{ related_product.thumbnail.url }}" alt="" class="img-fluid mx-auto d-block" style=>
+                        <img src="{{ related_product.thumbnail.url }}" alt="{{related_product.name}}" class="img-fluid mx-auto d-block" style=>
                         <a href="{% url 'product_detail' related_product.category.slug related_product.slug %}">
                             <div class="mask rgba-white-light"></div>
                         </a>
@@ -133,7 +133,7 @@
                 <div class="col-md-6 mb-4">
                     {% for review in product.reviews.all %}
                         <div class="media b-3">
-                            <img src="{{review.user.usuario.profile_pic.url}}" class="card-img-100 rounded-circle z-depth-1-half d-flex mr-3" alt="">
+                            <img src="{{review.user.usuario.profile_pic.url}}" class="card-img-100 rounded-circle z-depth-1-half d-flex mr-3" alt="Foto del Usuario">
                             
                             <div class="media-body">
                                 <h5 class="user-name font-weight-bold">{{review.user.usuario.name}}</h5>

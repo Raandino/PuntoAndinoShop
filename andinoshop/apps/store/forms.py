@@ -73,3 +73,14 @@ class ProductForm(ModelForm):
             'tags': TagWidget(attrs = {'class': 'form-control'}),
             'quantity_available': forms.NumberInput(attrs = {'class': 'form-control'}),
         }
+
+class CategoryForm(ModelForm):
+    class Meta:
+        model = Category
+        fields = ['parent', 'title', 'slug', 'ordering', 'alta']
+        widgets = {
+            'parent': forms.Select(attrs= {'class': 'form-control'}),
+            'title': forms.TextInput(attrs= {'class': 'form-control'}),
+            'slug': forms.TextInput(attrs= {'class': 'form-control'}),
+            'ordering': forms.NumberInput(attrs= {'class': 'form-control'}),
+        }

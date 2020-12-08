@@ -107,7 +107,7 @@
                     <div class="col-lg-4 col-md-12 mb-4">
                         <div class="card card-ecommerce">
                             <div class="view overlay">
-                                <img src="{{ product.thumbnail.url}}" class="img-fluid mx-auto d-block" alt="">
+                                <img src="{{ product.thumbnail.url}}" class="img-fluid mx-auto d-block" alt="{{product.name}}">
                                 <a href="{% url 'product_detail' product.category.slug product.slug %}">
                                     <div class="mask rgba-white-light">
 

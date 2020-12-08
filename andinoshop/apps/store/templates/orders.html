@@ -85,7 +85,7 @@
                   <tbody>
                       {% for order in order %}
                     <tr>
-                      <td scope="row"><a href="{% url 'order-detail' order.id %}" style="color: #386eaf" id="ordenid">#00{{order.id}}</a></td>
+                      <td scope="row"><a href="{% url 'order-detail' order.id %}" style="color: #386eaf" id="ordenid">#{{order.id}}</a></td>
                       <td>{{order.ordered_date|date:'M d, Y'}},
                           {{order.ordered_date|time}}
                       </td>
