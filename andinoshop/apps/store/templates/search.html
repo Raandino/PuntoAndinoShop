@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load store_extras %}
 {% block title %}Search | {% endblock %}
 {% block content %}
 
@@ -67,28 +67,28 @@
 
 
     </div>
-    <!--
+    
     <div class="text-center">
         <ul class="pagination pagination-circle pg-blue">
             
-            <li class="page-item"><a href="?page=1" class="page-link">Inicio</a></li>
+            <li class="page-item"><a href="{% my_url 1 'page' request.GET.urlencode %}" class="page-link">Inicio</a></li>
             {% if products.has_previous %}
 
-                <li class="page-item"><a href="?page={{ products.previous_page_number }}" class="page-link">Anterior</a></li>
+                <li class="page-item"><a href="{% my_url products.previous_page_number 'page' request.GET.urlencode %}" class="page-link">Anterior</a></li>
             {% endif %}
 
             {% for page in products.paginator %}
-            <li class="page-item" id="paginas"><a href="?page={{ page.number }}" class="page-link">{{ page.number }}</a></li>
+            <li class="page-item" id="paginas"><a href="{% my_url page.number 'page' request.GET.urlencode %}" class="page-link">{{ page.number }}</a></li>
             {% endfor %}
 
             {% if products.has_next %}
-            <li class="page-item"><a href="?page={{ products.next_page_number }}" class="page-link">Siguiente</a></li>
-            <li class="page-item"><a href="?page={{ products.paginator.num_pages }}" class="page-link">Ultimo</a></li>
+            <li class="page-item"><a href="{% my_url products.next_page_number 'page' request.GET.urlencode %}" class="page-link">Siguiente</a></li>
+            <li class="page-item"><a href="{% my_url products.paginator.num_pages 'page' request.GET.urlencode %}" class="page-link">Ultimo</a></li>
             {% endif %}
 
         </ul>
 
-    </div>-->
+    </div>
 </div>
 
 

@@ -19,7 +19,7 @@
 
 <div class="container wow fadeIn">
     <div class="card p-4">
-        <p class="card-title h3 ">Orden #00{{order.id}}, {{order.ordered_date|date:'M d, Y'}}, {{order.ordered_date|time}}</p>
+        <p class="card-title h3 ">Orden #{{order.id}}, {{order.ordered_date|date:'M d, Y'}}, {{order.ordered_date|time}}</p>
         <div>
         <span> <a href="{% url 'download' order.id %}">Descargar Factura</a></span>
         <span class="card-text text-right float-right">Estado: <span class="font-weight-bold">{{order.status}}</span></span>

@@ -1,0 +1,53 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% load store_extras %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Marcas</h1>
+    <a href="{% url 'create-brand' %}" class="btn btn-primary">Crear Marca</a>
+
+  </div>
+
+  <div class="table-responsive text-nowrap table-hover">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" class="font-weight-bold">Marca</th>
+
+        </tr>
+      </thead>
+      <tbody>
+          {% for brand in brand %}
+        <tr>
+          <td scope="row"><a href="{% url 'update-brand' brand.pk %}" style="color: #386eaf">{{brand.name}}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+    <div class="text-center">
+        <ul class="pagination pagination-circle pg-blue">
+            
+            <li class="page-item"><a href="?page=1" class="page-link">Inicio</a></li>
+            {% if brand.has_previous %}
+
+                <li class="page-item"><a href="?page={{ brand.previous_page_number }}" class="page-link">Anterior</a></li>
+            {% endif %}
+
+            {% for page in brand.paginator %}
+            <li class="page-item" id="paginas"><a href="?page={{ page.number }}" class="page-link">{{ page.number }}</a></li>
+            {% endfor %}
+
+            {% if brand.has_next %}
+            <li class="page-item"><a href="?page={{ brand.next_page_number }}" class="page-link">Siguiente</a></li>
+            <li class="page-item"><a href="?page={{ brand.paginator.num_pages }}" class="page-link">Ultimo</a></li>
+            {% endif %}
+
+        </ul>
+
+    </div>
+  </div>
+
+
+  {% endblock %}

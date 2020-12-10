@@ -8,7 +8,7 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import CreateUserForm, CustomerForm, AddressForm, CouponForm, OrderForm, ProductForm, CategoryForm
+from .forms import CreateUserForm, CustomerForm, AddressForm, CouponForm, OrderForm, ProductForm, CategoryForm, BrandForm
 from .models import Product, Category, OrderProduct, Order, Usuario, ProductReview, Brand, likedProduct, Listaliked, Address, Payment, Coupon
 from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
@@ -37,7 +37,7 @@ def search(request):
     query = request.GET.get('query')
     products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains = query)).filter(alta = False)
 
-    p = Paginator(products, 50)
+    p = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = p.get_page(page_number)
 
@@ -45,20 +45,20 @@ def search(request):
         'query': query,
         'products': page_obj
     }
-
+    print(connection.queries)
     return render(request, 'search.html', context)
 
 
 #DETALLES DEL PRODUCTO EN SI
 def product_detail(request, slug, category_slug):
-    product = get_object_or_404(Product, slug=slug)
+    product = Product.objects.get(slug = slug)
     product.num_visits = product.num_visits + 1
     product.save()
     if product.num_visits > 15:
         product.is_featured = True
         product.save()
     usuario = Usuario.objects.all()
-    related_products = list(product.category.products.all().exclude(id=product.id))
+    related_products = list(product.category.products.filter(alta = False).exclude(id=product.id))
     if len(related_products) >= 3:
         related_products = random.sample(related_products, 3)
 
@@ -118,7 +118,7 @@ def category_detail(request, slug):
     if is_valid_queryparam(pricemax):
         products = products.filter(price__lt=pricemax)
 
-    if marca :
+    if marca:
         products = products.filter(brand__name__in=request.GET.getlist('test'))
 
 
@@ -403,7 +403,7 @@ def move_to_cart(request, slug):
 
 def compare_similar(request, slug):
     product = get_object_or_404(Product, slug=slug)
-    related_products = product.tags.similar_objects() 
+    related_products = product.tags.similar_objects()
     if len(related_products) >= 3:
         related_products = random.sample(related_products, 3)
 
@@ -499,7 +499,7 @@ def payment_view(request):
             )
 
             
-                    #Creando el pago para tener un registro
+            #Creando el pago para tener un registro
             payment = Payment()
             payment.stripe_charge_id = charge['id']
             payment.user = request.user
@@ -518,7 +518,6 @@ def payment_view(request):
                 t.save()
 
 
-            #Asignando el pago a la orden
             order_products = order.products.all()
             order_products.update(ordered=True)
             for product in order_products:
@@ -528,7 +527,7 @@ def payment_view(request):
 
 
 
-            if len(order_products) > 3:
+            if len(order_products) >= 3:
                 coins = 10
                 usuario = request.user.usuario
                 coins_user = usuario.coins
@@ -536,6 +535,23 @@ def payment_view(request):
                 usuario.coins = total
                 usuario.save()
 
+            elif len(order_products) >= 6:
+                coins = 30
+                usuario = request.user.usuario
+                coins_user = usuario.coins
+                total = coins + coins_user
+                usuario.coins = total
+                usuario.save()
+
+            elif len(order_products) >= 10:
+                coins = 50
+                usuario = request.user.usuario
+                coins_user = usuario.coins
+                total = coins + coins_user
+                usuario.coins = total
+                usuario.save()
+
+            #Asignando el pago a la orden
 
             order.ordered = True
             order.payment = payment
@@ -1098,3 +1114,47 @@ def update_subcategory(request, pk):
         'form': form,
     }
     return render(request, 'update_subcategories.html', context)
+
+def brands(request):
+    brand = Brand.objects.all().only("name")  
+    p = Paginator(brand, 12)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)
+    except EmptyPage:
+        page_obj = p.get_page(1)
+
+    context = {
+        'brand': page_obj,
+    }
+    return render(request, "brands_admin.html", context)
+    
+def create_brand(request):
+    form = BrandForm()
+    if request.method == 'POST':
+        form = BrandForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Marca Creada")
+            return redirect('brands')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'create_brand.html', context)
+
+def update_brand(request, pk):
+    brand = Brand.objects.get(pk = pk)
+    form = BrandForm(instance = brand)
+    if request.method == 'POST':
+        form = BrandForm(request.POST, instance = brand)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Marca Actualizada")
+            return redirect('brands')
+    context = {
+        'brand': brand,
+        'form': form,
+    }
+    return render(request, 'update_brand.html', context)
+    

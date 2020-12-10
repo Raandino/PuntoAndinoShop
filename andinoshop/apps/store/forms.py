@@ -84,3 +84,12 @@ class CategoryForm(ModelForm):
             'slug': forms.TextInput(attrs= {'class': 'form-control'}),
             'ordering': forms.NumberInput(attrs= {'class': 'form-control'}),
         }
+
+class BrandForm(ModelForm):
+    class Meta:
+        model = Brand
+        fields = ['name', 'slug']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control'}),
+        }

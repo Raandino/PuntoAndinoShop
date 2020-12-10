@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import url
+from django.views.generic.base import TemplateView
 from django.contrib.sitemaps.views import sitemap
 
 from apps.core.views import frontpage
@@ -76,10 +78,18 @@ urlpatterns = [
     path('address/', address_view, name = 'address-view'),
     path('create-address/', address_create, name = 'address_create'),
     path('add-coupon/', add_coupon, name = 'add-coupon'),
+    path('brands/', brands, name = 'brands'),
+    path('create-brand/', create_brand, name = 'create-brand'),
     path('create-product/', create_product, name = 'create-product'),
     path('admin-products/', admin_products, name = 'admin-products'),
     path('orders/', orders_client, name = 'orders'),
     path('shipping/<str:pk>', shipping, name = 'selected-address'),
+    path('update-brand/<str:pk>', update_brand, name = 'update-brand'),
     path('payment/', payment_view, name = 'payment'),
     path('<slug:slug>/', category_detail, name='category_detail'),
+    path(
+        "robots.txt",
+        TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+    ),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+

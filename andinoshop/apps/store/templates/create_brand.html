@@ -1,0 +1,33 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+{% load store_extras %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    
+    <h1 class="h2">Crear Marca</h1>
+    
+
+  </div>
+  
+  <div class="">
+
+        <form action="" class="mb-5" method="POST" >
+            {% csrf_token %}
+    
+            <div class="form-group">
+              <label for="name">Nombre de la Marca: </label>
+              {{form.name}}
+            </div>
+
+            <div class="form-group">
+                <label for="name">Slug: </label>
+                {{form.slug}}
+            </div>
+
+            <input type="submit" value="Crear Marca" class="btn  btn-success mb-4">
+
+        </form>
+  </div>
+
+
+  {% endblock %}
